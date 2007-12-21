@@ -14,6 +14,7 @@ URL:		http://www.heiligenmann.de/vdr/vdr/plugins/wapd.html
 Source:		http://www.heiligenmann.de/vdr/download/vdr-%plugin-%version.tgz
 # From e-tobi:
 Patch0:		wapd-0.8-1.3.41.dpatch
+BuildRoot:	%{_tmppath}/%{name}-buildroot
 BuildRequires:	vdr-devel >= 1.4.1-6
 Requires:	vdr-abi = %vdr_abi
 
