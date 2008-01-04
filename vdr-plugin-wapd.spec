@@ -2,7 +2,7 @@
 %define plugin	wapd
 %define name	vdr-plugin-%plugin
 %define version	0.8
-%define rel	2
+%define rel	3
 
 Summary:	VDR plugin: Remote control by WAP
 Name:		%name
