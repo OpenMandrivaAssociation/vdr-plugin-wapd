@@ -1,8 +1,8 @@
 
 %define plugin	wapd
 %define name	vdr-plugin-%plugin
-%define version	0.8
-%define rel	3
+%define version	0.9
+%define rel	1
 
 Summary:	VDR plugin: Remote control by WAP
 Name:		%name
@@ -12,8 +12,6 @@ Group:		Video
 License:	GPL
 URL:		http://www.heiligenmann.de/vdr/vdr/plugins/wapd.html
 Source:		http://www.heiligenmann.de/vdr/download/vdr-%plugin-%version.tgz
-# From e-tobi:
-Patch0:		wapd-0.8-1.3.41.dpatch
 BuildRoot:	%{_tmppath}/%{name}-buildroot
 BuildRequires:	vdr-devel >= 1.4.1-6
 Requires:	vdr-abi = %vdr_abi
@@ -25,7 +23,6 @@ daemon" or "wapd".
 
 %prep
 %setup -q -n %plugin-%version
-%patch0 -p1
 
 %vdr_plugin_params_begin %plugin
 # use PORT for WAP (default: 8888)
