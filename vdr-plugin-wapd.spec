@@ -14,6 +14,7 @@ URL:		http://www.heiligenmann.de/vdr/vdr/plugins/wapd.html
 Source:		http://www.heiligenmann.de/vdr/download/vdr-%plugin-%version.tgz
 Patch0:		02_gettext-i18n.dpatch
 Patch1:		03_gcc-4.1.x.dpatch
+Patch2:		wapd-linking-order.patch
 BuildRoot:	%{_tmppath}/%{name}-buildroot
 BuildRequires:	vdr-devel >= 1.6.0
 Requires:	vdr-abi = %vdr_abi
@@ -27,6 +28,7 @@ daemon" or "wapd".
 %setup -q -n %plugin-%version
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 %vdr_plugin_prep
 
 %vdr_plugin_params_begin %plugin
