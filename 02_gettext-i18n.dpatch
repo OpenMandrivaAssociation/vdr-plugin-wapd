@@ -1,0 +1,4084 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 02_gettext-i18n.dpatch by Tobias Grimm <tg@e-tobi.net>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Adds gettext i18n.
+
+@DPATCH@
+diff -urNad vdr-plugin-wapd-0.9~/Makefile vdr-plugin-wapd-0.9/Makefile
+--- vdr-plugin-wapd-0.9~/Makefile	2008-02-12 00:53:25.000000000 +0100
++++ vdr-plugin-wapd-0.9/Makefile	2008-02-12 00:53:53.000000000 +0100
+@@ -53,7 +53,7 @@
+ 
+ ### The object files (add further files here):
+ 
+-OBJS = $(PLUGIN).o server.o tools.o access.o i18n.o
++OBJS = $(PLUGIN).o server.o tools.o access.o
+ 
+ LIBS = -lcrypt
+ 
+@@ -71,9 +71,34 @@
+ 
+ -include $(DEPFILE)
+ 
++### Internationalization (I18N):
++
++PODIR     = po
++LOCALEDIR = $(VDRDIR)/locale
++I18Npo    = $(wildcard $(PODIR)/*.po)
++I18Nmsgs  = $(addprefix $(LOCALEDIR)/, $(addsuffix /LC_MESSAGES/vdr-$(PLUGIN).mo, $(notdir $(foreach file, $(I18Npo), $(basename $(file))))))
++I18Npot   = $(PODIR)/$(PLUGIN).pot
++
++%.mo: %.po
++	msgfmt -c -o $@ $<
++
++$(I18Npot): $(wildcard *.c)
++	xgettext -C -cTRANSLATORS --no-wrap --no-location -k -kwmltr -ktr -ktrNOOP --msgid-bugs-address='<tg@e-tobi.net>' -o $@ $^
++
++%.po: $(I18Npot)
++	msgmerge -U --no-wrap --no-location --backup=none -q $@ $<
++	@touch $@
++
++$(I18Nmsgs): $(LOCALEDIR)/%/LC_MESSAGES/vdr-$(PLUGIN).mo: $(PODIR)/%.mo
++	@mkdir -p $(dir $@)
++	cp $< $@
++
++.PHONY: i18n
++i18n: $(I18Nmsgs)
++
+ ### Targets:
+ 
+-all: libvdr-$(PLUGIN).so wappasswd
++all: libvdr-$(PLUGIN).so wappasswd i18n
+ 
+ libvdr-$(PLUGIN).so: $(OBJS)
+ 	$(CXX) $(CXXFLAGS) -shared $(OBJS) $(LIBS) -o $@
+@@ -91,4 +116,5 @@
+ 	@echo Distribution package created as $(PACKAGE).tgz
+ 
+ clean:
++	@-rm -f $(PODIR)/*.mo $(PODIR)/*.pot
+ 	@-rm -f $(OBJS) $(DEPFILE) *.so *.tgz core* *~ wappasswd
+diff -urNad vdr-plugin-wapd-0.9~/po/ca_ES.po vdr-plugin-wapd-0.9/po/ca_ES.po
+--- vdr-plugin-wapd-0.9~/po/ca_ES.po	1970-01-01 01:00:00.000000000 +0100
++++ vdr-plugin-wapd-0.9/po/ca_ES.po	2008-02-12 00:55:50.000000000 +0100
+@@ -0,0 +1,187 @@
++# VDR plugin language source file.
++# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
++# This file is distributed under the same license as the VDR package.
++# Marc Rovira Vall <tm05462@salleURL.edu>, 2003
++# Ramon Roca <ramon.roca@xcombo.com>, 2003
++# Jordi Vilà <jvila@tinet.org>, 2003
++#
++msgid ""
++msgstr ""
++"Project-Id-Version: VDR 1.5.7\n"
++"Report-Msgid-Bugs-To: <tg@e-tobi.net>\n"
++"POT-Creation-Date: 2008-02-12 00:54+0100\n"
++"PO-Revision-Date: 2008-02-10 18:52+0100\n"
++"Last-Translator: Jordi Vilà <jvila@tinet.org>\n"
++"Language-Team: <vdr@linuxtv.org>\n"
++"MIME-Version: 1.0\n"
++"Content-Type: text/plain; charset=ISO-8859-1\n"
++"Content-Transfer-Encoding: 8bit\n"
++
++msgid "VDR"
++msgstr ""
++
++msgid "Edit channel"
++msgstr ""
++
++msgid "Channel is being used by a timer!"
++msgstr ""
++
++msgid "Channels"
++msgstr ""
++
++msgid "Edit timer"
++msgstr ""
++
++msgid "Timer is recording!"
++msgstr ""
++
++msgid "Timers"
++msgstr ""
++
++msgid "Name"
++msgstr ""
++
++msgid "Button$New"
++msgstr ""
++
++msgid "Frequency"
++msgstr ""
++
++msgid "Parameters"
++msgstr ""
++
++msgid "Source"
++msgstr ""
++
++msgid "Srate"
++msgstr ""
++
++msgid "Vpid"
++msgstr ""
++
++msgid "Apid"
++msgstr "PID Àudio"
++
++msgid "Tpid"
++msgstr ""
++
++msgid "CA"
++msgstr ""
++
++msgid "Sid"
++msgstr ""
++
++msgid "Nid"
++msgstr "Nid"
++
++msgid "Tid"
++msgstr "Tid"
++
++msgid "Rid"
++msgstr "Rid"
++
++msgid "Save"
++msgstr ""
++
++msgid "Schedule"
++msgstr ""
++
++msgid "Button$Switch"
++msgstr ""
++
++msgid "Button$Delete"
++msgstr ""
++
++msgid "Channel"
++msgstr ""
++
++msgid "Day"
++msgstr ""
++
++msgid "Start"
++msgstr ""
++
++msgid "Stop"
++msgstr ""
++
++msgid "Priority"
++msgstr ""
++
++msgid "Lifetime"
++msgstr ""
++
++msgid "File"
++msgstr ""
++
++msgid "Button$On/Off"
++msgstr ""
++
++msgid "Recording info"
++msgstr ""
++
++msgid "no title"
++msgstr ""
++
++msgid "no description"
++msgstr ""
++
++msgid "Error in recording id."
++msgstr ""
++
++msgid "Recordings"
++msgstr ""
++
++#, c-format
++msgid "Event \"%s\" not found."
++msgstr ""
++
++#, c-format
++msgid "Error in event id \"%s\"."
++msgstr ""
++
++msgid "Button$Record"
++msgstr ""
++
++msgid "What's on now?"
++msgstr ""
++
++msgid "What's on next?"
++msgstr ""
++
++msgid "Button$Next"
++msgstr ""
++
++msgid "Button$Now"
++msgstr ""
++
++msgid "No schedule available."
++msgstr ""
++
++#, c-format
++msgid "Channel %d not defined."
++msgstr ""
++
++msgid "Can't get EPG data."
++msgstr ""
++
++msgid "No channels defined."
++msgstr ""
++
++#, c-format
++msgid "Timer \"%d\" not found."
++msgstr ""
++
++msgid "No timers defined."
++msgstr ""
++
++msgid "No recordings available."
++msgstr ""
++
++msgid "Setup.OSD$Language"
++msgstr ""
++
++msgid "Image"
++msgstr ""
++
++msgid "Remote control by WAP"
++msgstr ""
+diff -urNad vdr-plugin-wapd-0.9~/po/cs_CZ.po vdr-plugin-wapd-0.9/po/cs_CZ.po
+--- vdr-plugin-wapd-0.9~/po/cs_CZ.po	1970-01-01 01:00:00.000000000 +0100
++++ vdr-plugin-wapd-0.9/po/cs_CZ.po	2008-02-12 00:55:50.000000000 +0100
+@@ -0,0 +1,185 @@
++# VDR plugin language source file.
++# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
++# This file is distributed under the same license as the VDR package.
++# Vladimír Bárta <vladimir.barta@k2atmitec.cz>, 2006
++#
++msgid ""
++msgstr ""
++"Project-Id-Version: VDR 1.5.7\n"
++"Report-Msgid-Bugs-To: <tg@e-tobi.net>\n"
++"POT-Creation-Date: 2008-02-12 00:54+0100\n"
++"PO-Revision-Date: 2008-02-10 18:52+0100\n"
++"Last-Translator: Vladimír Bárta <vladimir.barta@k2atmitec.cz>\n"
++"Language-Team: <vdr@linuxtv.org>\n"
++"MIME-Version: 1.0\n"
++"Content-Type: text/plain; charset=ISO-8859-2\n"
++"Content-Transfer-Encoding: 8bit\n"
++
++msgid "VDR"
++msgstr ""
++
++msgid "Edit channel"
++msgstr ""
++
++msgid "Channel is being used by a timer!"
++msgstr ""
++
++msgid "Channels"
++msgstr ""
++
++msgid "Edit timer"
++msgstr ""
++
++msgid "Timer is recording!"
++msgstr ""
++
++msgid "Timers"
++msgstr ""
++
++msgid "Name"
++msgstr ""
++
++msgid "Button$New"
++msgstr ""
++
++msgid "Frequency"
++msgstr ""
++
++msgid "Parameters"
++msgstr ""
++
++msgid "Source"
++msgstr ""
++
++msgid "Srate"
++msgstr ""
++
++msgid "Vpid"
++msgstr ""
++
++msgid "Apid"
++msgstr ""
++
++msgid "Tpid"
++msgstr ""
++
++msgid "CA"
++msgstr ""
++
++msgid "Sid"
++msgstr ""
++
++msgid "Nid"
++msgstr ""
++
++msgid "Tid"
++msgstr ""
++
++msgid "Rid"
++msgstr ""
++
++msgid "Save"
++msgstr ""
++
++msgid "Schedule"
++msgstr ""
++
++msgid "Button$Switch"
++msgstr ""
++
++msgid "Button$Delete"
++msgstr ""
++
++msgid "Channel"
++msgstr ""
++
++msgid "Day"
++msgstr ""
++
++msgid "Start"
++msgstr ""
++
++msgid "Stop"
++msgstr ""
++
++msgid "Priority"
++msgstr ""
++
++msgid "Lifetime"
++msgstr ""
++
++msgid "File"
++msgstr ""
++
++msgid "Button$On/Off"
++msgstr ""
++
++msgid "Recording info"
++msgstr ""
++
++msgid "no title"
++msgstr ""
++
++msgid "no description"
++msgstr ""
++
++msgid "Error in recording id."
++msgstr ""
++
++msgid "Recordings"
++msgstr ""
++
++#, c-format
++msgid "Event \"%s\" not found."
++msgstr ""
++
++#, c-format
++msgid "Error in event id \"%s\"."
++msgstr ""
++
++msgid "Button$Record"
++msgstr ""
++
++msgid "What's on now?"
++msgstr ""
++
++msgid "What's on next?"
++msgstr ""
++
++msgid "Button$Next"
++msgstr ""
++
++msgid "Button$Now"
++msgstr ""
++
++msgid "No schedule available."
++msgstr ""
++
++#, c-format
++msgid "Channel %d not defined."
++msgstr ""
++
++msgid "Can't get EPG data."
++msgstr ""
++
++msgid "No channels defined."
++msgstr ""
++
++#, c-format
++msgid "Timer \"%d\" not found."
++msgstr ""
++
++msgid "No timers defined."
++msgstr ""
++
++msgid "No recordings available."
++msgstr ""
++
++msgid "Setup.OSD$Language"
++msgstr ""
++
++msgid "Image"
++msgstr ""
++
++msgid "Remote control by WAP"
++msgstr ""
+diff -urNad vdr-plugin-wapd-0.9~/po/da_DK.po vdr-plugin-wapd-0.9/po/da_DK.po
+--- vdr-plugin-wapd-0.9~/po/da_DK.po	1970-01-01 01:00:00.000000000 +0100
++++ vdr-plugin-wapd-0.9/po/da_DK.po	2008-02-12 00:55:50.000000000 +0100
+@@ -0,0 +1,185 @@
++# VDR plugin language source file.
++# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
++# This file is distributed under the same license as the VDR package.
++# Mogens Elneff <mogens@elneff.dk>, 2004
++#
++msgid ""
++msgstr ""
++"Project-Id-Version: VDR 1.5.7\n"
++"Report-Msgid-Bugs-To: <tg@e-tobi.net>\n"
++"POT-Creation-Date: 2008-02-12 00:54+0100\n"
++"PO-Revision-Date: 2008-02-10 18:52+0100\n"
++"Last-Translator: Mogens Elneff <mogens@elneff.dk>\n"
++"Language-Team: <vdr@linuxtv.org>\n"
++"MIME-Version: 1.0\n"
++"Content-Type: text/plain; charset=ISO-8859-15\n"
++"Content-Transfer-Encoding: 8bit\n"
++
++msgid "VDR"
++msgstr ""
++
++msgid "Edit channel"
++msgstr ""
++
++msgid "Channel is being used by a timer!"
++msgstr ""
++
++msgid "Channels"
++msgstr ""
++
++msgid "Edit timer"
++msgstr ""
++
++msgid "Timer is recording!"
++msgstr ""
++
++msgid "Timers"
++msgstr ""
++
++msgid "Name"
++msgstr ""
++
++msgid "Button$New"
++msgstr ""
++
++msgid "Frequency"
++msgstr ""
++
++msgid "Parameters"
++msgstr ""
++
++msgid "Source"
++msgstr ""
++
++msgid "Srate"
++msgstr ""
++
++msgid "Vpid"
++msgstr ""
++
++msgid "Apid"
++msgstr "Apid"
++
++msgid "Tpid"
++msgstr ""
++
++msgid "CA"
++msgstr ""
++
++msgid "Sid"
++msgstr ""
++
++msgid "Nid"
++msgstr "Nid"
++
++msgid "Tid"
++msgstr "Tid"
++
++msgid "Rid"
++msgstr "Rid"
++
++msgid "Save"
++msgstr ""
++
++msgid "Schedule"
++msgstr ""
++
++msgid "Button$Switch"
++msgstr ""
++
++msgid "Button$Delete"
++msgstr ""
++
++msgid "Channel"
++msgstr ""
++
++msgid "Day"
++msgstr ""
++
++msgid "Start"
++msgstr ""
++
++msgid "Stop"
++msgstr ""
++
++msgid "Priority"
++msgstr ""
++
++msgid "Lifetime"
++msgstr ""
++
++msgid "File"
++msgstr ""
++
++msgid "Button$On/Off"
++msgstr ""
++
++msgid "Recording info"
++msgstr ""
++
++msgid "no title"
++msgstr ""
++
++msgid "no description"
++msgstr ""
++
++msgid "Error in recording id."
++msgstr ""
++
++msgid "Recordings"
++msgstr ""
++
++#, c-format
++msgid "Event \"%s\" not found."
++msgstr ""
++
++#, c-format
++msgid "Error in event id \"%s\"."
++msgstr ""
++
++msgid "Button$Record"
++msgstr ""
++
++msgid "What's on now?"
++msgstr ""
++
++msgid "What's on next?"
++msgstr ""
++
++msgid "Button$Next"
++msgstr ""
++
++msgid "Button$Now"
++msgstr ""
++
++msgid "No schedule available."
++msgstr ""
++
++#, c-format
++msgid "Channel %d not defined."
++msgstr ""
++
++msgid "Can't get EPG data."
++msgstr ""
++
++msgid "No channels defined."
++msgstr ""
++
++#, c-format
++msgid "Timer \"%d\" not found."
++msgstr ""
++
++msgid "No timers defined."
++msgstr ""
++
++msgid "No recordings available."
++msgstr ""
++
++msgid "Setup.OSD$Language"
++msgstr ""
++
++msgid "Image"
++msgstr ""
++
++msgid "Remote control by WAP"
++msgstr ""
+diff -urNad vdr-plugin-wapd-0.9~/po/de_DE.po vdr-plugin-wapd-0.9/po/de_DE.po
+--- vdr-plugin-wapd-0.9~/po/de_DE.po	1970-01-01 01:00:00.000000000 +0100
++++ vdr-plugin-wapd-0.9/po/de_DE.po	2008-02-12 00:55:50.000000000 +0100
+@@ -0,0 +1,185 @@
++# VDR plugin language source file.
++# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
++# This file is distributed under the same license as the VDR package.
++# Klaus Schmidinger <kls@cadsoft.de>, 2000
++#
++msgid ""
++msgstr ""
++"Project-Id-Version: VDR 1.5.7\n"
++"Report-Msgid-Bugs-To: <tg@e-tobi.net>\n"
++"POT-Creation-Date: 2008-02-12 00:54+0100\n"
++"PO-Revision-Date: 2008-02-10 18:52+0100\n"
++"Last-Translator: Klaus Schmidinger <kls@cadsoft.de>\n"
++"Language-Team: <vdr@linuxtv.org>\n"
++"MIME-Version: 1.0\n"
++"Content-Type: text/plain; charset=ISO-8859-15\n"
++"Content-Transfer-Encoding: 8bit\n"
++
++msgid "VDR"
++msgstr ""
++
++msgid "Edit channel"
++msgstr ""
++
++msgid "Channel is being used by a timer!"
++msgstr ""
++
++msgid "Channels"
++msgstr ""
++
++msgid "Edit timer"
++msgstr ""
++
++msgid "Timer is recording!"
++msgstr ""
++
++msgid "Timers"
++msgstr ""
++
++msgid "Name"
++msgstr ""
++
++msgid "Button$New"
++msgstr ""
++
++msgid "Frequency"
++msgstr ""
++
++msgid "Parameters"
++msgstr "Parameter"
++
++msgid "Source"
++msgstr ""
++
++msgid "Srate"
++msgstr ""
++
++msgid "Vpid"
++msgstr ""
++
++msgid "Apid"
++msgstr "Apid"
++
++msgid "Tpid"
++msgstr ""
++
++msgid "CA"
++msgstr ""
++
++msgid "Sid"
++msgstr ""
++
++msgid "Nid"
++msgstr "Nid"
++
++msgid "Tid"
++msgstr "Tid"
++
++msgid "Rid"
++msgstr "Rid"
++
++msgid "Save"
++msgstr "Speichern"
++
++msgid "Schedule"
++msgstr ""
++
++msgid "Button$Switch"
++msgstr ""
++
++msgid "Button$Delete"
++msgstr ""
++
++msgid "Channel"
++msgstr ""
++
++msgid "Day"
++msgstr ""
++
++msgid "Start"
++msgstr ""
++
++msgid "Stop"
++msgstr ""
++
++msgid "Priority"
++msgstr ""
++
++msgid "Lifetime"
++msgstr ""
++
++msgid "File"
++msgstr ""
++
++msgid "Button$On/Off"
++msgstr ""
++
++msgid "Recording info"
++msgstr ""
++
++msgid "no title"
++msgstr "kein Titel"
++
++msgid "no description"
++msgstr "keine Beschreibung"
++
++msgid "Error in recording id."
++msgstr ""
++
++msgid "Recordings"
++msgstr ""
++
++#, c-format
++msgid "Event \"%s\" not found."
++msgstr "Sendung \"%s\" nicht gefunden."
++
++#, c-format
++msgid "Error in event id \"%s\"."
++msgstr ""
++
++msgid "Button$Record"
++msgstr ""
++
++msgid "What's on now?"
++msgstr ""
++
++msgid "What's on next?"
++msgstr ""
++
++msgid "Button$Next"
++msgstr ""
++
++msgid "Button$Now"
++msgstr ""
++
++msgid "No schedule available."
++msgstr "Kein Programm verfügbar."
++
++#, c-format
++msgid "Channel %d not defined."
++msgstr ""
++
++msgid "Can't get EPG data."
++msgstr "Kann EPG Daten nicht lesen."
++
++msgid "No channels defined."
++msgstr "Keine Kanäle definiert."
++
++#, c-format
++msgid "Timer \"%d\" not found."
++msgstr "Timer \"%d\" nicht gefunden."
++
++msgid "No timers defined."
++msgstr "Keine Timer definiert."
++
++msgid "No recordings available."
++msgstr "Keine Aufnahmen verfügbar."
++
++msgid "Setup.OSD$Language"
++msgstr ""
++
++msgid "Image"
++msgstr "Bild"
++
++msgid "Remote control by WAP"
++msgstr ""
+diff -urNad vdr-plugin-wapd-0.9~/po/el_GR.po vdr-plugin-wapd-0.9/po/el_GR.po
+--- vdr-plugin-wapd-0.9~/po/el_GR.po	1970-01-01 01:00:00.000000000 +0100
++++ vdr-plugin-wapd-0.9/po/el_GR.po	2008-02-12 00:55:50.000000000 +0100
+@@ -0,0 +1,185 @@
++# VDR plugin language source file.
++# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
++# This file is distributed under the same license as the VDR package.
++# Dimitrios Dimitrakos <mail@dimitrios.de>, 2002
++#
++msgid ""
++msgstr ""
++"Project-Id-Version: VDR 1.5.7\n"
++"Report-Msgid-Bugs-To: <tg@e-tobi.net>\n"
++"POT-Creation-Date: 2008-02-12 00:54+0100\n"
++"PO-Revision-Date: 2008-02-10 18:52+0100\n"
++"Last-Translator: Dimitrios Dimitrakos <mail@dimitrios.de>\n"
++"Language-Team: <vdr@linuxtv.org>\n"
++"MIME-Version: 1.0\n"
++"Content-Type: text/plain; charset=ISO-8859-7\n"
++"Content-Transfer-Encoding: 8bit\n"
++
++msgid "VDR"
++msgstr ""
++
++msgid "Edit channel"
++msgstr ""
++
++msgid "Channel is being used by a timer!"
++msgstr ""
++
++msgid "Channels"
++msgstr ""
++
++msgid "Edit timer"
++msgstr ""
++
++msgid "Timer is recording!"
++msgstr ""
++
++msgid "Timers"
++msgstr ""
++
++msgid "Name"
++msgstr ""
++
++msgid "Button$New"
++msgstr ""
++
++msgid "Frequency"
++msgstr ""
++
++msgid "Parameters"
++msgstr ""
++
++msgid "Source"
++msgstr ""
++
++msgid "Srate"
++msgstr ""
++
++msgid "Vpid"
++msgstr ""
++
++msgid "Apid"
++msgstr "Apid"
++
++msgid "Tpid"
++msgstr ""
++
++msgid "CA"
++msgstr ""
++
++msgid "Sid"
++msgstr ""
++
++msgid "Nid"
++msgstr "Nid"
++
++msgid "Tid"
++msgstr "Tid"
++
++msgid "Rid"
++msgstr "Rid"
++
++msgid "Save"
++msgstr ""
++
++msgid "Schedule"
++msgstr ""
++
++msgid "Button$Switch"
++msgstr ""
++
++msgid "Button$Delete"
++msgstr ""
++
++msgid "Channel"
++msgstr ""
++
++msgid "Day"
++msgstr ""
++
++msgid "Start"
++msgstr ""
++
++msgid "Stop"
++msgstr ""
++
++msgid "Priority"
++msgstr ""
++
++msgid "Lifetime"
++msgstr ""
++
++msgid "File"
++msgstr ""
++
++msgid "Button$On/Off"
++msgstr ""
++
++msgid "Recording info"
++msgstr ""
++
++msgid "no title"
++msgstr ""
++
++msgid "no description"
++msgstr ""
++
++msgid "Error in recording id."
++msgstr ""
++
++msgid "Recordings"
++msgstr ""
++
++#, c-format
++msgid "Event \"%s\" not found."
++msgstr ""
++
++#, c-format
++msgid "Error in event id \"%s\"."
++msgstr ""
++
++msgid "Button$Record"
++msgstr ""
++
++msgid "What's on now?"
++msgstr ""
++
++msgid "What's on next?"
++msgstr ""
++
++msgid "Button$Next"
++msgstr ""
++
++msgid "Button$Now"
++msgstr ""
++
++msgid "No schedule available."
++msgstr ""
++
++#, c-format
++msgid "Channel %d not defined."
++msgstr ""
++
++msgid "Can't get EPG data."
++msgstr ""
++
++msgid "No channels defined."
++msgstr ""
++
++#, c-format
++msgid "Timer \"%d\" not found."
++msgstr ""
++
++msgid "No timers defined."
++msgstr ""
++
++msgid "No recordings available."
++msgstr ""
++
++msgid "Setup.OSD$Language"
++msgstr ""
++
++msgid "Image"
++msgstr ""
++
++msgid "Remote control by WAP"
++msgstr ""
+diff -urNad vdr-plugin-wapd-0.9~/po/es_ES.po vdr-plugin-wapd-0.9/po/es_ES.po
+--- vdr-plugin-wapd-0.9~/po/es_ES.po	1970-01-01 01:00:00.000000000 +0100
++++ vdr-plugin-wapd-0.9/po/es_ES.po	2008-02-12 00:55:50.000000000 +0100
+@@ -0,0 +1,185 @@
++# VDR plugin language source file.
++# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
++# This file is distributed under the same license as the VDR package.
++# Ruben Nunez Francisco <ruben.nunez@tang-it.com>, 2002
++#
++msgid ""
++msgstr ""
++"Project-Id-Version: VDR 1.5.7\n"
++"Report-Msgid-Bugs-To: <tg@e-tobi.net>\n"
++"POT-Creation-Date: 2008-02-12 00:54+0100\n"
++"PO-Revision-Date: 2008-02-10 18:52+0100\n"
++"Last-Translator: Ruben Nunez Francisco <ruben.nunez@tang-it.com>\n"
++"Language-Team: <vdr@linuxtv.org>\n"
++"MIME-Version: 1.0\n"
++"Content-Type: text/plain; charset=ISO-8859-15\n"
++"Content-Transfer-Encoding: 8bit\n"
++
++msgid "VDR"
++msgstr ""
++
++msgid "Edit channel"
++msgstr ""
++
++msgid "Channel is being used by a timer!"
++msgstr ""
++
++msgid "Channels"
++msgstr ""
++
++msgid "Edit timer"
++msgstr ""
++
++msgid "Timer is recording!"
++msgstr ""
++
++msgid "Timers"
++msgstr ""
++
++msgid "Name"
++msgstr ""
++
++msgid "Button$New"
++msgstr ""
++
++msgid "Frequency"
++msgstr ""
++
++msgid "Parameters"
++msgstr ""
++
++msgid "Source"
++msgstr ""
++
++msgid "Srate"
++msgstr ""
++
++msgid "Vpid"
++msgstr ""
++
++msgid "Apid"
++msgstr "Apid"
++
++msgid "Tpid"
++msgstr ""
++
++msgid "CA"
++msgstr ""
++
++msgid "Sid"
++msgstr ""
++
++msgid "Nid"
++msgstr "Nid"
++
++msgid "Tid"
++msgstr "Tid"
++
++msgid "Rid"
++msgstr "Rid"
++
++msgid "Save"
++msgstr ""
++
++msgid "Schedule"
++msgstr ""
++
++msgid "Button$Switch"
++msgstr ""
++
++msgid "Button$Delete"
++msgstr ""
++
++msgid "Channel"
++msgstr ""
++
++msgid "Day"
++msgstr ""
++
++msgid "Start"
++msgstr ""
++
++msgid "Stop"
++msgstr ""
++
++msgid "Priority"
++msgstr ""
++
++msgid "Lifetime"
++msgstr ""
++
++msgid "File"
++msgstr ""
++
++msgid "Button$On/Off"
++msgstr ""
++
++msgid "Recording info"
++msgstr ""
++
++msgid "no title"
++msgstr ""
++
++msgid "no description"
++msgstr ""
++
++msgid "Error in recording id."
++msgstr ""
++
++msgid "Recordings"
++msgstr ""
++
++#, c-format
++msgid "Event \"%s\" not found."
++msgstr ""
++
++#, c-format
++msgid "Error in event id \"%s\"."
++msgstr ""
++
++msgid "Button$Record"
++msgstr ""
++
++msgid "What's on now?"
++msgstr ""
++
++msgid "What's on next?"
++msgstr ""
++
++msgid "Button$Next"
++msgstr ""
++
++msgid "Button$Now"
++msgstr ""
++
++msgid "No schedule available."
++msgstr ""
++
++#, c-format
++msgid "Channel %d not defined."
++msgstr ""
++
++msgid "Can't get EPG data."
++msgstr ""
++
++msgid "No channels defined."
++msgstr ""
++
++#, c-format
++msgid "Timer \"%d\" not found."
++msgstr ""
++
++msgid "No timers defined."
++msgstr ""
++
++msgid "No recordings available."
++msgstr ""
++
++msgid "Setup.OSD$Language"
++msgstr ""
++
++msgid "Image"
++msgstr ""
++
++msgid "Remote control by WAP"
++msgstr ""
+diff -urNad vdr-plugin-wapd-0.9~/po/et_EE.po vdr-plugin-wapd-0.9/po/et_EE.po
+--- vdr-plugin-wapd-0.9~/po/et_EE.po	1970-01-01 01:00:00.000000000 +0100
++++ vdr-plugin-wapd-0.9/po/et_EE.po	2008-02-12 00:55:50.000000000 +0100
+@@ -0,0 +1,185 @@
++# VDR plugin language source file.
++# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
++# This file is distributed under the same license as the VDR package.
++# Arthur Konovalov <kasjas@hot.ee>, 2004
++#
++msgid ""
++msgstr ""
++"Project-Id-Version: VDR 1.5.7\n"
++"Report-Msgid-Bugs-To: <tg@e-tobi.net>\n"
++"POT-Creation-Date: 2008-02-12 00:54+0100\n"
++"PO-Revision-Date: 2008-02-10 18:52+0100\n"
++"Last-Translator: Arthur Konovalov <kasjas@hot.ee>\n"
++"Language-Team: <vdr@linuxtv.org>\n"
++"MIME-Version: 1.0\n"
++"Content-Type: text/plain; charset=ISO-8859-13\n"
++"Content-Transfer-Encoding: 8bit\n"
++
++msgid "VDR"
++msgstr ""
++
++msgid "Edit channel"
++msgstr ""
++
++msgid "Channel is being used by a timer!"
++msgstr ""
++
++msgid "Channels"
++msgstr ""
++
++msgid "Edit timer"
++msgstr ""
++
++msgid "Timer is recording!"
++msgstr ""
++
++msgid "Timers"
++msgstr ""
++
++msgid "Name"
++msgstr ""
++
++msgid "Button$New"
++msgstr ""
++
++msgid "Frequency"
++msgstr ""
++
++msgid "Parameters"
++msgstr ""
++
++msgid "Source"
++msgstr ""
++
++msgid "Srate"
++msgstr ""
++
++msgid "Vpid"
++msgstr ""
++
++msgid "Apid"
++msgstr "Apid"
++
++msgid "Tpid"
++msgstr ""
++
++msgid "CA"
++msgstr ""
++
++msgid "Sid"
++msgstr ""
++
++msgid "Nid"
++msgstr "Nid"
++
++msgid "Tid"
++msgstr "Tid"
++
++msgid "Rid"
++msgstr "Rid"
++
++msgid "Save"
++msgstr ""
++
++msgid "Schedule"
++msgstr ""
++
++msgid "Button$Switch"
++msgstr ""
++
++msgid "Button$Delete"
++msgstr ""
++
++msgid "Channel"
++msgstr ""
++
++msgid "Day"
++msgstr ""
++
++msgid "Start"
++msgstr ""
++
++msgid "Stop"
++msgstr ""
++
++msgid "Priority"
++msgstr ""
++
++msgid "Lifetime"
++msgstr ""
++
++msgid "File"
++msgstr ""
++
++msgid "Button$On/Off"
++msgstr ""
++
++msgid "Recording info"
++msgstr ""
++
++msgid "no title"
++msgstr ""
++
++msgid "no description"
++msgstr ""
++
++msgid "Error in recording id."
++msgstr ""
++
++msgid "Recordings"
++msgstr ""
++
++#, c-format
++msgid "Event \"%s\" not found."
++msgstr ""
++
++#, c-format
++msgid "Error in event id \"%s\"."
++msgstr ""
++
++msgid "Button$Record"
++msgstr ""
++
++msgid "What's on now?"
++msgstr ""
++
++msgid "What's on next?"
++msgstr ""
++
++msgid "Button$Next"
++msgstr ""
++
++msgid "Button$Now"
++msgstr ""
++
++msgid "No schedule available."
++msgstr ""
++
++#, c-format
++msgid "Channel %d not defined."
++msgstr ""
++
++msgid "Can't get EPG data."
++msgstr ""
++
++msgid "No channels defined."
++msgstr ""
++
++#, c-format
++msgid "Timer \"%d\" not found."
++msgstr ""
++
++msgid "No timers defined."
++msgstr ""
++
++msgid "No recordings available."
++msgstr ""
++
++msgid "Setup.OSD$Language"
++msgstr ""
++
++msgid "Image"
++msgstr ""
++
++msgid "Remote control by WAP"
++msgstr ""
+diff -urNad vdr-plugin-wapd-0.9~/po/fi_FI.po vdr-plugin-wapd-0.9/po/fi_FI.po
+--- vdr-plugin-wapd-0.9~/po/fi_FI.po	1970-01-01 01:00:00.000000000 +0100
++++ vdr-plugin-wapd-0.9/po/fi_FI.po	2008-02-12 00:55:50.000000000 +0100
+@@ -0,0 +1,188 @@
++# VDR plugin language source file.
++# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
++# This file is distributed under the same license as the VDR package.
++# Hannu Savolainen <hannu@opensound.com>, 2002
++# Jaakko Hyvätti <jaakko@hyvatti.iki.fi>, 2002
++# Niko Tarnanen <niko.tarnanen@hut.fi>, 2003
++# Rolf Ahrenberg <rahrenbe@cc.hut.fi>, 2003
++#
++msgid ""
++msgstr ""
++"Project-Id-Version: VDR 1.5.7\n"
++"Report-Msgid-Bugs-To: <tg@e-tobi.net>\n"
++"POT-Creation-Date: 2008-02-12 00:54+0100\n"
++"PO-Revision-Date: 2008-02-10 18:52+0100\n"
++"Last-Translator: Rolf Ahrenberg <rahrenbe@cc.hut.fi>\n"
++"Language-Team: <vdr@linuxtv.org>\n"
++"MIME-Version: 1.0\n"
++"Content-Type: text/plain; charset=ISO-8859-15\n"
++"Content-Transfer-Encoding: 8bit\n"
++
++msgid "VDR"
++msgstr ""
++
++msgid "Edit channel"
++msgstr ""
++
++msgid "Channel is being used by a timer!"
++msgstr ""
++
++msgid "Channels"
++msgstr ""
++
++msgid "Edit timer"
++msgstr ""
++
++msgid "Timer is recording!"
++msgstr ""
++
++msgid "Timers"
++msgstr ""
++
++msgid "Name"
++msgstr ""
++
++msgid "Button$New"
++msgstr ""
++
++msgid "Frequency"
++msgstr ""
++
++msgid "Parameters"
++msgstr "Parametrit"
++
++msgid "Source"
++msgstr ""
++
++msgid "Srate"
++msgstr ""
++
++msgid "Vpid"
++msgstr ""
++
++msgid "Apid"
++msgstr "Ääni PID"
++
++msgid "Tpid"
++msgstr ""
++
++msgid "CA"
++msgstr ""
++
++msgid "Sid"
++msgstr ""
++
++msgid "Nid"
++msgstr "Verkko ID"
++
++msgid "Tid"
++msgstr "Lähete ID"
++
++msgid "Rid"
++msgstr "Radio ID"
++
++msgid "Save"
++msgstr "Tallenna"
++
++msgid "Schedule"
++msgstr ""
++
++msgid "Button$Switch"
++msgstr ""
++
++msgid "Button$Delete"
++msgstr ""
++
++msgid "Channel"
++msgstr ""
++
++msgid "Day"
++msgstr ""
++
++msgid "Start"
++msgstr ""
++
++msgid "Stop"
++msgstr ""
++
++msgid "Priority"
++msgstr ""
++
++msgid "Lifetime"
++msgstr ""
++
++msgid "File"
++msgstr ""
++
++msgid "Button$On/Off"
++msgstr ""
++
++msgid "Recording info"
++msgstr ""
++
++msgid "no title"
++msgstr "ei nimeä"
++
++msgid "no description"
++msgstr "ei kuvausta"
++
++msgid "Error in recording id."
++msgstr ""
++
++msgid "Recordings"
++msgstr ""
++
++#, c-format
++msgid "Event \"%s\" not found."
++msgstr "Tapahtumaa \"%s\" ei löydy."
++
++#, c-format
++msgid "Error in event id \"%s\"."
++msgstr ""
++
++msgid "Button$Record"
++msgstr ""
++
++msgid "What's on now?"
++msgstr ""
++
++msgid "What's on next?"
++msgstr ""
++
++msgid "Button$Next"
++msgstr ""
++
++msgid "Button$Now"
++msgstr ""
++
++msgid "No schedule available."
++msgstr "Ohjelmistoa ei saatavilla."
++
++#, c-format
++msgid "Channel %d not defined."
++msgstr ""
++
++msgid "Can't get EPG data."
++msgstr "EPG-tieto ei saatavilla."
++
++msgid "No channels defined."
++msgstr "Kanavia ei määritelty."
++
++#, c-format
++msgid "Timer \"%d\" not found."
++msgstr "Ajastinta \"%d\" ei löydy."
++
++msgid "No timers defined."
++msgstr "Ajastimia ei määritelty."
++
++msgid "No recordings available."
++msgstr "Tallenteita ei ole saatavilla."
++
++msgid "Setup.OSD$Language"
++msgstr ""
++
++msgid "Image"
++msgstr ""
++
++msgid "Remote control by WAP"
++msgstr ""
+diff -urNad vdr-plugin-wapd-0.9~/po/fr_FR.po vdr-plugin-wapd-0.9/po/fr_FR.po
+--- vdr-plugin-wapd-0.9~/po/fr_FR.po	1970-01-01 01:00:00.000000000 +0100
++++ vdr-plugin-wapd-0.9/po/fr_FR.po	2008-02-12 00:55:50.000000000 +0100
+@@ -0,0 +1,188 @@
++# VDR plugin language source file.
++# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
++# This file is distributed under the same license as the VDR package.
++# Jean-Claude Repetto <jc@repetto.org>, 2001
++# Olivier Jacques <jacquesolivier@hotmail.com>, 2003
++# Gregoire Favre <greg@magma.unil.ch>, 2003
++# Nicolas Huillard <nhuillard@e-dition.fr>, 2005
++#
++msgid ""
++msgstr ""
++"Project-Id-Version: VDR 1.5.7\n"
++"Report-Msgid-Bugs-To: <tg@e-tobi.net>\n"
++"POT-Creation-Date: 2008-02-12 00:54+0100\n"
++"PO-Revision-Date: 2008-02-10 18:52+0100\n"
++"Last-Translator: Nicolas Huillard <nhuillard@e-dition.fr>\n"
++"Language-Team: <vdr@linuxtv.org>\n"
++"MIME-Version: 1.0\n"
++"Content-Type: text/plain; charset=ISO-8859-1\n"
++"Content-Transfer-Encoding: 8bit\n"
++
++msgid "VDR"
++msgstr ""
++
++msgid "Edit channel"
++msgstr ""
++
++msgid "Channel is being used by a timer!"
++msgstr ""
++
++msgid "Channels"
++msgstr ""
++
++msgid "Edit timer"
++msgstr ""
++
++msgid "Timer is recording!"
++msgstr ""
++
++msgid "Timers"
++msgstr ""
++
++msgid "Name"
++msgstr ""
++
++msgid "Button$New"
++msgstr ""
++
++msgid "Frequency"
++msgstr ""
++
++msgid "Parameters"
++msgstr "Paramètres"
++
++msgid "Source"
++msgstr ""
++
++msgid "Srate"
++msgstr ""
++
++msgid "Vpid"
++msgstr ""
++
++msgid "Apid"
++msgstr "PID Audio"
++
++msgid "Tpid"
++msgstr ""
++
++msgid "CA"
++msgstr ""
++
++msgid "Sid"
++msgstr ""
++
++msgid "Nid"
++msgstr "Nid"
++
++msgid "Tid"
++msgstr "Tid"
++
++msgid "Rid"
++msgstr "Rid"
++
++msgid "Save"
++msgstr "Enregistrer"
++
++msgid "Schedule"
++msgstr ""
++
++msgid "Button$Switch"
++msgstr ""
++
++msgid "Button$Delete"
++msgstr ""
++
++msgid "Channel"
++msgstr ""
++
++msgid "Day"
++msgstr ""
++
++msgid "Start"
++msgstr ""
++
++msgid "Stop"
++msgstr ""
++
++msgid "Priority"
++msgstr ""
++
++msgid "Lifetime"
++msgstr ""
++
++msgid "File"
++msgstr ""
++
++msgid "Button$On/Off"
++msgstr ""
++
++msgid "Recording info"
++msgstr ""
++
++msgid "no title"
++msgstr "pas de titre"
++
++msgid "no description"
++msgstr "pas de description"
++
++msgid "Error in recording id."
++msgstr ""
++
++msgid "Recordings"
++msgstr ""
++
++#, c-format
++msgid "Event \"%s\" not found."
++msgstr "Evénement \"%s\" non trouvé."
++
++#, c-format
++msgid "Error in event id \"%s\"."
++msgstr ""
++
++msgid "Button$Record"
++msgstr ""
++
++msgid "What's on now?"
++msgstr ""
++
++msgid "What's on next?"
++msgstr ""
++
++msgid "Button$Next"
++msgstr ""
++
++msgid "Button$Now"
++msgstr ""
++
++msgid "No schedule available."
++msgstr "Pas de programmes définis."
++
++#, c-format
++msgid "Channel %d not defined."
++msgstr ""
++
++msgid "Can't get EPG data."
++msgstr "Impossible de lire le guide des programmes."
++
++msgid "No channels defined."
++msgstr "Pas de chaînes définies."
++
++#, c-format
++msgid "Timer \"%d\" not found."
++msgstr "Programmation \"%d\" non trouvé."
++
++msgid "No timers defined."
++msgstr "Pas de programmations définies."
++
++msgid "No recordings available."
++msgstr "Pas de enregistrements disponibles."
++
++msgid "Setup.OSD$Language"
++msgstr ""
++
++msgid "Image"
++msgstr "Image"
++
++msgid "Remote control by WAP"
++msgstr ""
+diff -urNad vdr-plugin-wapd-0.9~/po/hr_HR.po vdr-plugin-wapd-0.9/po/hr_HR.po
+--- vdr-plugin-wapd-0.9~/po/hr_HR.po	1970-01-01 01:00:00.000000000 +0100
++++ vdr-plugin-wapd-0.9/po/hr_HR.po	2008-02-12 00:55:50.000000000 +0100
+@@ -0,0 +1,186 @@
++# VDR plugin language source file.
++# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
++# This file is distributed under the same license as the VDR package.
++# Drazen Dupor <drazen.dupor@dupor.com>, 2004
++# Dino Ravnic <dino.ravnic@fer.hr>, 2004
++#
++msgid ""
++msgstr ""
++"Project-Id-Version: VDR 1.5.7\n"
++"Report-Msgid-Bugs-To: <tg@e-tobi.net>\n"
++"POT-Creation-Date: 2008-02-12 00:54+0100\n"
++"PO-Revision-Date: 2008-02-10 18:52+0100\n"
++"Last-Translator: Drazen Dupor <drazen.dupor@dupor.com>\n"
++"Language-Team: <vdr@linuxtv.org>\n"
++"MIME-Version: 1.0\n"
++"Content-Type: text/plain; charset=ISO-8859-2\n"
++"Content-Transfer-Encoding: 8bit\n"
++
++msgid "VDR"
++msgstr ""
++
++msgid "Edit channel"
++msgstr ""
++
++msgid "Channel is being used by a timer!"
++msgstr ""
++
++msgid "Channels"
++msgstr ""
++
++msgid "Edit timer"
++msgstr ""
++
++msgid "Timer is recording!"
++msgstr ""
++
++msgid "Timers"
++msgstr ""
++
++msgid "Name"
++msgstr ""
++
++msgid "Button$New"
++msgstr ""
++
++msgid "Frequency"
++msgstr ""
++
++msgid "Parameters"
++msgstr ""
++
++msgid "Source"
++msgstr ""
++
++msgid "Srate"
++msgstr ""
++
++msgid "Vpid"
++msgstr ""
++
++msgid "Apid"
++msgstr "Apid"
++
++msgid "Tpid"
++msgstr ""
++
++msgid "CA"
++msgstr ""
++
++msgid "Sid"
++msgstr ""
++
++msgid "Nid"
++msgstr "Nid"
++
++msgid "Tid"
++msgstr "Tid"
++
++msgid "Rid"
++msgstr "Rid"
++
++msgid "Save"
++msgstr ""
++
++msgid "Schedule"
++msgstr ""
++
++msgid "Button$Switch"
++msgstr ""
++
++msgid "Button$Delete"
++msgstr ""
++
++msgid "Channel"
++msgstr ""
++
++msgid "Day"
++msgstr ""
++
++msgid "Start"
++msgstr ""
++
++msgid "Stop"
++msgstr ""
++
++msgid "Priority"
++msgstr ""
++
++msgid "Lifetime"
++msgstr ""
++
++msgid "File"
++msgstr ""
++
++msgid "Button$On/Off"
++msgstr ""
++
++msgid "Recording info"
++msgstr ""
++
++msgid "no title"
++msgstr ""
++
++msgid "no description"
++msgstr ""
++
++msgid "Error in recording id."
++msgstr ""
++
++msgid "Recordings"
++msgstr ""
++
++#, c-format
++msgid "Event \"%s\" not found."
++msgstr ""
++
++#, c-format
++msgid "Error in event id \"%s\"."
++msgstr ""
++
++msgid "Button$Record"
++msgstr ""
++
++msgid "What's on now?"
++msgstr ""
++
++msgid "What's on next?"
++msgstr ""
++
++msgid "Button$Next"
++msgstr ""
++
++msgid "Button$Now"
++msgstr ""
++
++msgid "No schedule available."
++msgstr ""
++
++#, c-format
++msgid "Channel %d not defined."
++msgstr ""
++
++msgid "Can't get EPG data."
++msgstr ""
++
++msgid "No channels defined."
++msgstr ""
++
++#, c-format
++msgid "Timer \"%d\" not found."
++msgstr ""
++
++msgid "No timers defined."
++msgstr ""
++
++msgid "No recordings available."
++msgstr ""
++
++msgid "Setup.OSD$Language"
++msgstr ""
++
++msgid "Image"
++msgstr ""
++
++msgid "Remote control by WAP"
++msgstr ""
+diff -urNad vdr-plugin-wapd-0.9~/po/hu_HU.po vdr-plugin-wapd-0.9/po/hu_HU.po
+--- vdr-plugin-wapd-0.9~/po/hu_HU.po	1970-01-01 01:00:00.000000000 +0100
++++ vdr-plugin-wapd-0.9/po/hu_HU.po	2008-02-12 00:55:50.000000000 +0100
+@@ -0,0 +1,186 @@
++# VDR plugin language source file.
++# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
++# This file is distributed under the same license as the VDR package.
++# Istvan Koenigsberger <istvnko@hotmail.com>, 2002
++# Guido Josten <guido.josten@t-online.de>, 2002
++#
++msgid ""
++msgstr ""
++"Project-Id-Version: VDR 1.5.7\n"
++"Report-Msgid-Bugs-To: <tg@e-tobi.net>\n"
++"POT-Creation-Date: 2008-02-12 00:54+0100\n"
++"PO-Revision-Date: 2008-02-10 18:52+0100\n"
++"Last-Translator: Istvan Koenigsberger <istvnko@hotmail.com>, Guido Josten <guido.josten@t-online.de>\n"
++"Language-Team: <vdr@linuxtv.org>\n"
++"MIME-Version: 1.0\n"
++"Content-Type: text/plain; charset=ISO-8859-2\n"
++"Content-Transfer-Encoding: 8bit\n"
++
++msgid "VDR"
++msgstr ""
++
++msgid "Edit channel"
++msgstr ""
++
++msgid "Channel is being used by a timer!"
++msgstr ""
++
++msgid "Channels"
++msgstr ""
++
++msgid "Edit timer"
++msgstr ""
++
++msgid "Timer is recording!"
++msgstr ""
++
++msgid "Timers"
++msgstr ""
++
++msgid "Name"
++msgstr ""
++
++msgid "Button$New"
++msgstr ""
++
++msgid "Frequency"
++msgstr ""
++
++msgid "Parameters"
++msgstr ""
++
++msgid "Source"
++msgstr ""
++
++msgid "Srate"
++msgstr ""
++
++msgid "Vpid"
++msgstr ""
++
++msgid "Apid"
++msgstr "Apid"
++
++msgid "Tpid"
++msgstr ""
++
++msgid "CA"
++msgstr ""
++
++msgid "Sid"
++msgstr ""
++
++msgid "Nid"
++msgstr "Nid"
++
++msgid "Tid"
++msgstr "Tid"
++
++msgid "Rid"
++msgstr "Rid"
++
++msgid "Save"
++msgstr ""
++
++msgid "Schedule"
++msgstr ""
++
++msgid "Button$Switch"
++msgstr ""
++
++msgid "Button$Delete"
++msgstr ""
++
++msgid "Channel"
++msgstr ""
++
++msgid "Day"
++msgstr ""
++
++msgid "Start"
++msgstr ""
++
++msgid "Stop"
++msgstr ""
++
++msgid "Priority"
++msgstr ""
++
++msgid "Lifetime"
++msgstr ""
++
++msgid "File"
++msgstr ""
++
++msgid "Button$On/Off"
++msgstr ""
++
++msgid "Recording info"
++msgstr ""
++
++msgid "no title"
++msgstr ""
++
++msgid "no description"
++msgstr ""
++
++msgid "Error in recording id."
++msgstr ""
++
++msgid "Recordings"
++msgstr ""
++
++#, c-format
++msgid "Event \"%s\" not found."
++msgstr ""
++
++#, c-format
++msgid "Error in event id \"%s\"."
++msgstr ""
++
++msgid "Button$Record"
++msgstr ""
++
++msgid "What's on now?"
++msgstr ""
++
++msgid "What's on next?"
++msgstr ""
++
++msgid "Button$Next"
++msgstr ""
++
++msgid "Button$Now"
++msgstr ""
++
++msgid "No schedule available."
++msgstr ""
++
++#, c-format
++msgid "Channel %d not defined."
++msgstr ""
++
++msgid "Can't get EPG data."
++msgstr ""
++
++msgid "No channels defined."
++msgstr ""
++
++#, c-format
++msgid "Timer \"%d\" not found."
++msgstr ""
++
++msgid "No timers defined."
++msgstr ""
++
++msgid "No recordings available."
++msgstr ""
++
++msgid "Setup.OSD$Language"
++msgstr ""
++
++msgid "Image"
++msgstr ""
++
++msgid "Remote control by WAP"
++msgstr ""
+diff -urNad vdr-plugin-wapd-0.9~/po/it_IT.po vdr-plugin-wapd-0.9/po/it_IT.po
+--- vdr-plugin-wapd-0.9~/po/it_IT.po	1970-01-01 01:00:00.000000000 +0100
++++ vdr-plugin-wapd-0.9/po/it_IT.po	2008-02-12 00:55:51.000000000 +0100
+@@ -0,0 +1,187 @@
++# VDR plugin language source file.
++# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
++# This file is distributed under the same license as the VDR package.
++# Alberto Carraro <bertocar@tin.it>, 2001
++# Antonio Ospite <ospite@studenti.unina.it>, 2003
++# Sean Carlos <seanc@libero.it>, 2005
++#
++msgid ""
++msgstr ""
++"Project-Id-Version: VDR 1.5.7\n"
++"Report-Msgid-Bugs-To: <tg@e-tobi.net>\n"
++"POT-Creation-Date: 2008-02-12 00:54+0100\n"
++"PO-Revision-Date: 2008-02-10 18:52+0100\n"
++"Last-Translator: Sean Carlos <seanc@libero.it>\n"
++"Language-Team: <vdr@linuxtv.org>\n"
++"MIME-Version: 1.0\n"
++"Content-Type: text/plain; charset=ISO-8859-15\n"
++"Content-Transfer-Encoding: 8bit\n"
++
++msgid "VDR"
++msgstr ""
++
++msgid "Edit channel"
++msgstr ""
++
++msgid "Channel is being used by a timer!"
++msgstr ""
++
++msgid "Channels"
++msgstr ""
++
++msgid "Edit timer"
++msgstr ""
++
++msgid "Timer is recording!"
++msgstr ""
++
++msgid "Timers"
++msgstr ""
++
++msgid "Name"
++msgstr ""
++
++msgid "Button$New"
++msgstr ""
++
++msgid "Frequency"
++msgstr ""
++
++msgid "Parameters"
++msgstr "Parametri"
++
++msgid "Source"
++msgstr ""
++
++msgid "Srate"
++msgstr ""
++
++msgid "Vpid"
++msgstr ""
++
++msgid "Apid"
++msgstr "Apid"
++
++msgid "Tpid"
++msgstr ""
++
++msgid "CA"
++msgstr ""
++
++msgid "Sid"
++msgstr ""
++
++msgid "Nid"
++msgstr "Nid"
++
++msgid "Tid"
++msgstr "Tid"
++
++msgid "Rid"
++msgstr "Rid"
++
++msgid "Save"
++msgstr "Salva"
++
++msgid "Schedule"
++msgstr ""
++
++msgid "Button$Switch"
++msgstr ""
++
++msgid "Button$Delete"
++msgstr ""
++
++msgid "Channel"
++msgstr ""
++
++msgid "Day"
++msgstr ""
++
++msgid "Start"
++msgstr ""
++
++msgid "Stop"
++msgstr ""
++
++msgid "Priority"
++msgstr ""
++
++msgid "Lifetime"
++msgstr ""
++
++msgid "File"
++msgstr ""
++
++msgid "Button$On/Off"
++msgstr ""
++
++msgid "Recording info"
++msgstr ""
++
++msgid "no title"
++msgstr "nessun titolo"
++
++msgid "no description"
++msgstr "nessuna descrizione"
++
++msgid "Error in recording id."
++msgstr ""
++
++msgid "Recordings"
++msgstr ""
++
++#, c-format
++msgid "Event \"%s\" not found."
++msgstr "Evento \"%s\" non trovato."
++
++#, c-format
++msgid "Error in event id \"%s\"."
++msgstr ""
++
++msgid "Button$Record"
++msgstr ""
++
++msgid "What's on now?"
++msgstr ""
++
++msgid "What's on next?"
++msgstr ""
++
++msgid "Button$Next"
++msgstr ""
++
++msgid "Button$Now"
++msgstr ""
++
++msgid "No schedule available."
++msgstr "Nessun programma disponibile."
++
++#, c-format
++msgid "Channel %d not defined."
++msgstr ""
++
++msgid "Can't get EPG data."
++msgstr "Impossibile trovare dati EPG."
++
++msgid "No channels defined."
++msgstr "Nessun canale definito."
++
++#, c-format
++msgid "Timer \"%d\" not found."
++msgstr "Timer \"%d\" non trovato."
++
++msgid "No timers defined."
++msgstr "Nessun timer definito."
++
++msgid "No recordings available."
++msgstr "Nessuna registrazione disponibile."
++
++msgid "Setup.OSD$Language"
++msgstr ""
++
++msgid "Image"
++msgstr ""
++
++msgid "Remote control by WAP"
++msgstr ""
+diff -urNad vdr-plugin-wapd-0.9~/po/nl_NL.po vdr-plugin-wapd-0.9/po/nl_NL.po
+--- vdr-plugin-wapd-0.9~/po/nl_NL.po	1970-01-01 01:00:00.000000000 +0100
++++ vdr-plugin-wapd-0.9/po/nl_NL.po	2008-02-12 00:55:51.000000000 +0100
+@@ -0,0 +1,187 @@
++# VDR plugin language source file.
++# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
++# This file is distributed under the same license as the VDR package.
++# Arnold Niessen <niessen@iae.nl> <arnold.niessen@philips.com>, 2001
++# Hans Dingemans <hans.dingemans@tacticalops.nl>, 2003
++# Maarten Wisse <Maarten.Wisse@urz.uni-hd.de>, 2005
++#
++msgid ""
++msgstr ""
++"Project-Id-Version: VDR 1.5.7\n"
++"Report-Msgid-Bugs-To: <tg@e-tobi.net>\n"
++"POT-Creation-Date: 2008-02-12 00:54+0100\n"
++"PO-Revision-Date: 2008-02-10 18:52+0100\n"
++"Last-Translator: Maarten Wisse <Maarten.Wisse@urz.uni-hd.de>\n"
++"Language-Team: <vdr@linuxtv.org>\n"
++"MIME-Version: 1.0\n"
++"Content-Type: text/plain; charset=ISO-8859-15\n"
++"Content-Transfer-Encoding: 8bit\n"
++
++msgid "VDR"
++msgstr ""
++
++msgid "Edit channel"
++msgstr ""
++
++msgid "Channel is being used by a timer!"
++msgstr ""
++
++msgid "Channels"
++msgstr ""
++
++msgid "Edit timer"
++msgstr ""
++
++msgid "Timer is recording!"
++msgstr ""
++
++msgid "Timers"
++msgstr ""
++
++msgid "Name"
++msgstr ""
++
++msgid "Button$New"
++msgstr ""
++
++msgid "Frequency"
++msgstr ""
++
++msgid "Parameters"
++msgstr ""
++
++msgid "Source"
++msgstr ""
++
++msgid "Srate"
++msgstr ""
++
++msgid "Vpid"
++msgstr ""
++
++msgid "Apid"
++msgstr "Apid"
++
++msgid "Tpid"
++msgstr ""
++
++msgid "CA"
++msgstr ""
++
++msgid "Sid"
++msgstr ""
++
++msgid "Nid"
++msgstr "Nid"
++
++msgid "Tid"
++msgstr "Tid"
++
++msgid "Rid"
++msgstr "Rid"
++
++msgid "Save"
++msgstr ""
++
++msgid "Schedule"
++msgstr ""
++
++msgid "Button$Switch"
++msgstr ""
++
++msgid "Button$Delete"
++msgstr ""
++
++msgid "Channel"
++msgstr ""
++
++msgid "Day"
++msgstr ""
++
++msgid "Start"
++msgstr ""
++
++msgid "Stop"
++msgstr ""
++
++msgid "Priority"
++msgstr ""
++
++msgid "Lifetime"
++msgstr ""
++
++msgid "File"
++msgstr ""
++
++msgid "Button$On/Off"
++msgstr ""
++
++msgid "Recording info"
++msgstr ""
++
++msgid "no title"
++msgstr ""
++
++msgid "no description"
++msgstr ""
++
++msgid "Error in recording id."
++msgstr ""
++
++msgid "Recordings"
++msgstr ""
++
++#, c-format
++msgid "Event \"%s\" not found."
++msgstr ""
++
++#, c-format
++msgid "Error in event id \"%s\"."
++msgstr ""
++
++msgid "Button$Record"
++msgstr ""
++
++msgid "What's on now?"
++msgstr ""
++
++msgid "What's on next?"
++msgstr ""
++
++msgid "Button$Next"
++msgstr ""
++
++msgid "Button$Now"
++msgstr ""
++
++msgid "No schedule available."
++msgstr ""
++
++#, c-format
++msgid "Channel %d not defined."
++msgstr ""
++
++msgid "Can't get EPG data."
++msgstr ""
++
++msgid "No channels defined."
++msgstr ""
++
++#, c-format
++msgid "Timer \"%d\" not found."
++msgstr ""
++
++msgid "No timers defined."
++msgstr ""
++
++msgid "No recordings available."
++msgstr ""
++
++msgid "Setup.OSD$Language"
++msgstr ""
++
++msgid "Image"
++msgstr ""
++
++msgid "Remote control by WAP"
++msgstr ""
+diff -urNad vdr-plugin-wapd-0.9~/po/nn_NO.po vdr-plugin-wapd-0.9/po/nn_NO.po
+--- vdr-plugin-wapd-0.9~/po/nn_NO.po	1970-01-01 01:00:00.000000000 +0100
++++ vdr-plugin-wapd-0.9/po/nn_NO.po	2008-02-12 00:55:51.000000000 +0100
+@@ -0,0 +1,186 @@
++# VDR plugin language source file.
++# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
++# This file is distributed under the same license as the VDR package.
++# Jørgen Tvedt <pjtvedt@online.no>, 2001
++# Truls Slevigen <truls@slevigen.no>, 2002
++#
++msgid ""
++msgstr ""
++"Project-Id-Version: VDR 1.5.7\n"
++"Report-Msgid-Bugs-To: <tg@e-tobi.net>\n"
++"POT-Creation-Date: 2008-02-12 00:54+0100\n"
++"PO-Revision-Date: 2008-02-10 18:52+0100\n"
++"Last-Translator: Truls Slevigen <truls@slevigen.no>\n"
++"Language-Team: <vdr@linuxtv.org>\n"
++"MIME-Version: 1.0\n"
++"Content-Type: text/plain; charset=ISO-8859-1\n"
++"Content-Transfer-Encoding: 8bit\n"
++
++msgid "VDR"
++msgstr ""
++
++msgid "Edit channel"
++msgstr ""
++
++msgid "Channel is being used by a timer!"
++msgstr ""
++
++msgid "Channels"
++msgstr ""
++
++msgid "Edit timer"
++msgstr ""
++
++msgid "Timer is recording!"
++msgstr ""
++
++msgid "Timers"
++msgstr ""
++
++msgid "Name"
++msgstr ""
++
++msgid "Button$New"
++msgstr ""
++
++msgid "Frequency"
++msgstr ""
++
++msgid "Parameters"
++msgstr ""
++
++msgid "Source"
++msgstr ""
++
++msgid "Srate"
++msgstr ""
++
++msgid "Vpid"
++msgstr ""
++
++msgid "Apid"
++msgstr "Apid"
++
++msgid "Tpid"
++msgstr ""
++
++msgid "CA"
++msgstr ""
++
++msgid "Sid"
++msgstr ""
++
++msgid "Nid"
++msgstr "Nid"
++
++msgid "Tid"
++msgstr "Tid"
++
++msgid "Rid"
++msgstr "Rid"
++
++msgid "Save"
++msgstr ""
++
++msgid "Schedule"
++msgstr ""
++
++msgid "Button$Switch"
++msgstr ""
++
++msgid "Button$Delete"
++msgstr ""
++
++msgid "Channel"
++msgstr ""
++
++msgid "Day"
++msgstr ""
++
++msgid "Start"
++msgstr ""
++
++msgid "Stop"
++msgstr ""
++
++msgid "Priority"
++msgstr ""
++
++msgid "Lifetime"
++msgstr ""
++
++msgid "File"
++msgstr ""
++
++msgid "Button$On/Off"
++msgstr ""
++
++msgid "Recording info"
++msgstr ""
++
++msgid "no title"
++msgstr ""
++
++msgid "no description"
++msgstr ""
++
++msgid "Error in recording id."
++msgstr ""
++
++msgid "Recordings"
++msgstr ""
++
++#, c-format
++msgid "Event \"%s\" not found."
++msgstr ""
++
++#, c-format
++msgid "Error in event id \"%s\"."
++msgstr ""
++
++msgid "Button$Record"
++msgstr ""
++
++msgid "What's on now?"
++msgstr ""
++
++msgid "What's on next?"
++msgstr ""
++
++msgid "Button$Next"
++msgstr ""
++
++msgid "Button$Now"
++msgstr ""
++
++msgid "No schedule available."
++msgstr ""
++
++#, c-format
++msgid "Channel %d not defined."
++msgstr ""
++
++msgid "Can't get EPG data."
++msgstr ""
++
++msgid "No channels defined."
++msgstr ""
++
++#, c-format
++msgid "Timer \"%d\" not found."
++msgstr ""
++
++msgid "No timers defined."
++msgstr ""
++
++msgid "No recordings available."
++msgstr ""
++
++msgid "Setup.OSD$Language"
++msgstr ""
++
++msgid "Image"
++msgstr ""
++
++msgid "Remote control by WAP"
++msgstr ""
+diff -urNad vdr-plugin-wapd-0.9~/po/pl_PL.po vdr-plugin-wapd-0.9/po/pl_PL.po
+--- vdr-plugin-wapd-0.9~/po/pl_PL.po	1970-01-01 01:00:00.000000000 +0100
++++ vdr-plugin-wapd-0.9/po/pl_PL.po	2008-02-12 00:55:51.000000000 +0100
+@@ -0,0 +1,185 @@
++# VDR plugin language source file.
++# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
++# This file is distributed under the same license as the VDR package.
++# Michael Rakowski <mrak@gmx.de>, 2002
++#
++msgid ""
++msgstr ""
++"Project-Id-Version: VDR 1.5.7\n"
++"Report-Msgid-Bugs-To: <tg@e-tobi.net>\n"
++"POT-Creation-Date: 2008-02-12 00:54+0100\n"
++"PO-Revision-Date: 2008-02-10 18:52+0100\n"
++"Last-Translator: Michael Rakowski <mrak@gmx.de>\n"
++"Language-Team: <vdr@linuxtv.org>\n"
++"MIME-Version: 1.0\n"
++"Content-Type: text/plain; charset=ISO-8859-2\n"
++"Content-Transfer-Encoding: 8bit\n"
++
++msgid "VDR"
++msgstr ""
++
++msgid "Edit channel"
++msgstr ""
++
++msgid "Channel is being used by a timer!"
++msgstr ""
++
++msgid "Channels"
++msgstr ""
++
++msgid "Edit timer"
++msgstr ""
++
++msgid "Timer is recording!"
++msgstr ""
++
++msgid "Timers"
++msgstr ""
++
++msgid "Name"
++msgstr ""
++
++msgid "Button$New"
++msgstr ""
++
++msgid "Frequency"
++msgstr ""
++
++msgid "Parameters"
++msgstr ""
++
++msgid "Source"
++msgstr ""
++
++msgid "Srate"
++msgstr ""
++
++msgid "Vpid"
++msgstr ""
++
++msgid "Apid"
++msgstr "Apid"
++
++msgid "Tpid"
++msgstr ""
++
++msgid "CA"
++msgstr ""
++
++msgid "Sid"
++msgstr ""
++
++msgid "Nid"
++msgstr "Nid"
++
++msgid "Tid"
++msgstr "Tid"
++
++msgid "Rid"
++msgstr "Rid"
++
++msgid "Save"
++msgstr ""
++
++msgid "Schedule"
++msgstr ""
++
++msgid "Button$Switch"
++msgstr ""
++
++msgid "Button$Delete"
++msgstr ""
++
++msgid "Channel"
++msgstr ""
++
++msgid "Day"
++msgstr ""
++
++msgid "Start"
++msgstr ""
++
++msgid "Stop"
++msgstr ""
++
++msgid "Priority"
++msgstr ""
++
++msgid "Lifetime"
++msgstr ""
++
++msgid "File"
++msgstr ""
++
++msgid "Button$On/Off"
++msgstr ""
++
++msgid "Recording info"
++msgstr ""
++
++msgid "no title"
++msgstr ""
++
++msgid "no description"
++msgstr ""
++
++msgid "Error in recording id."
++msgstr ""
++
++msgid "Recordings"
++msgstr ""
++
++#, c-format
++msgid "Event \"%s\" not found."
++msgstr ""
++
++#, c-format
++msgid "Error in event id \"%s\"."
++msgstr ""
++
++msgid "Button$Record"
++msgstr ""
++
++msgid "What's on now?"
++msgstr ""
++
++msgid "What's on next?"
++msgstr ""
++
++msgid "Button$Next"
++msgstr ""
++
++msgid "Button$Now"
++msgstr ""
++
++msgid "No schedule available."
++msgstr ""
++
++#, c-format
++msgid "Channel %d not defined."
++msgstr ""
++
++msgid "Can't get EPG data."
++msgstr ""
++
++msgid "No channels defined."
++msgstr ""
++
++#, c-format
++msgid "Timer \"%d\" not found."
++msgstr ""
++
++msgid "No timers defined."
++msgstr ""
++
++msgid "No recordings available."
++msgstr ""
++
++msgid "Setup.OSD$Language"
++msgstr ""
++
++msgid "Image"
++msgstr ""
++
++msgid "Remote control by WAP"
++msgstr ""
+diff -urNad vdr-plugin-wapd-0.9~/po/pt_PT.po vdr-plugin-wapd-0.9/po/pt_PT.po
+--- vdr-plugin-wapd-0.9~/po/pt_PT.po	1970-01-01 01:00:00.000000000 +0100
++++ vdr-plugin-wapd-0.9/po/pt_PT.po	2008-02-12 00:55:51.000000000 +0100
+@@ -0,0 +1,185 @@
++# VDR plugin language source file.
++# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
++# This file is distributed under the same license as the VDR package.
++# Paulo Lopes <pmml@netvita.pt>, 2001
++#
++msgid ""
++msgstr ""
++"Project-Id-Version: VDR 1.5.7\n"
++"Report-Msgid-Bugs-To: <tg@e-tobi.net>\n"
++"POT-Creation-Date: 2008-02-12 00:54+0100\n"
++"PO-Revision-Date: 2008-02-10 18:52+0100\n"
++"Last-Translator: Paulo Lopes <pmml@netvita.pt>\n"
++"Language-Team: <vdr@linuxtv.org>\n"
++"MIME-Version: 1.0\n"
++"Content-Type: text/plain; charset=ISO-8859-1\n"
++"Content-Transfer-Encoding: 8bit\n"
++
++msgid "VDR"
++msgstr ""
++
++msgid "Edit channel"
++msgstr ""
++
++msgid "Channel is being used by a timer!"
++msgstr ""
++
++msgid "Channels"
++msgstr ""
++
++msgid "Edit timer"
++msgstr ""
++
++msgid "Timer is recording!"
++msgstr ""
++
++msgid "Timers"
++msgstr ""
++
++msgid "Name"
++msgstr ""
++
++msgid "Button$New"
++msgstr ""
++
++msgid "Frequency"
++msgstr ""
++
++msgid "Parameters"
++msgstr ""
++
++msgid "Source"
++msgstr ""
++
++msgid "Srate"
++msgstr ""
++
++msgid "Vpid"
++msgstr ""
++
++msgid "Apid"
++msgstr "Apid"
++
++msgid "Tpid"
++msgstr ""
++
++msgid "CA"
++msgstr ""
++
++msgid "Sid"
++msgstr ""
++
++msgid "Nid"
++msgstr "Nid"
++
++msgid "Tid"
++msgstr "Tid"
++
++msgid "Rid"
++msgstr "Rid"
++
++msgid "Save"
++msgstr ""
++
++msgid "Schedule"
++msgstr ""
++
++msgid "Button$Switch"
++msgstr ""
++
++msgid "Button$Delete"
++msgstr ""
++
++msgid "Channel"
++msgstr ""
++
++msgid "Day"
++msgstr ""
++
++msgid "Start"
++msgstr ""
++
++msgid "Stop"
++msgstr ""
++
++msgid "Priority"
++msgstr ""
++
++msgid "Lifetime"
++msgstr ""
++
++msgid "File"
++msgstr ""
++
++msgid "Button$On/Off"
++msgstr ""
++
++msgid "Recording info"
++msgstr ""
++
++msgid "no title"
++msgstr ""
++
++msgid "no description"
++msgstr ""
++
++msgid "Error in recording id."
++msgstr ""
++
++msgid "Recordings"
++msgstr ""
++
++#, c-format
++msgid "Event \"%s\" not found."
++msgstr ""
++
++#, c-format
++msgid "Error in event id \"%s\"."
++msgstr ""
++
++msgid "Button$Record"
++msgstr ""
++
++msgid "What's on now?"
++msgstr ""
++
++msgid "What's on next?"
++msgstr ""
++
++msgid "Button$Next"
++msgstr ""
++
++msgid "Button$Now"
++msgstr ""
++
++msgid "No schedule available."
++msgstr ""
++
++#, c-format
++msgid "Channel %d not defined."
++msgstr ""
++
++msgid "Can't get EPG data."
++msgstr ""
++
++msgid "No channels defined."
++msgstr ""
++
++#, c-format
++msgid "Timer \"%d\" not found."
++msgstr ""
++
++msgid "No timers defined."
++msgstr ""
++
++msgid "No recordings available."
++msgstr ""
++
++msgid "Setup.OSD$Language"
++msgstr ""
++
++msgid "Image"
++msgstr ""
++
++msgid "Remote control by WAP"
++msgstr ""
+diff -urNad vdr-plugin-wapd-0.9~/po/ro_RO.po vdr-plugin-wapd-0.9/po/ro_RO.po
+--- vdr-plugin-wapd-0.9~/po/ro_RO.po	1970-01-01 01:00:00.000000000 +0100
++++ vdr-plugin-wapd-0.9/po/ro_RO.po	2008-02-12 00:55:51.000000000 +0100
+@@ -0,0 +1,186 @@
++# VDR plugin language source file.
++# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
++# This file is distributed under the same license as the VDR package.
++# Paul Lacatus <paul@campina.iiruc.ro>, 2002
++# Lucian Muresan <lucianm@users.sourceforge.net>, 2004
++#
++msgid ""
++msgstr ""
++"Project-Id-Version: VDR 1.5.7\n"
++"Report-Msgid-Bugs-To: <tg@e-tobi.net>\n"
++"POT-Creation-Date: 2008-02-12 00:54+0100\n"
++"PO-Revision-Date: 2008-02-10 18:52+0100\n"
++"Last-Translator: Lucian Muresan <lucianm@users.sourceforge.net>\n"
++"Language-Team: <vdr@linuxtv.org>\n"
++"MIME-Version: 1.0\n"
++"Content-Type: text/plain; charset=ISO-8859-2\n"
++"Content-Transfer-Encoding: 8bit\n"
++
++msgid "VDR"
++msgstr ""
++
++msgid "Edit channel"
++msgstr ""
++
++msgid "Channel is being used by a timer!"
++msgstr ""
++
++msgid "Channels"
++msgstr ""
++
++msgid "Edit timer"
++msgstr ""
++
++msgid "Timer is recording!"
++msgstr ""
++
++msgid "Timers"
++msgstr ""
++
++msgid "Name"
++msgstr ""
++
++msgid "Button$New"
++msgstr ""
++
++msgid "Frequency"
++msgstr ""
++
++msgid "Parameters"
++msgstr ""
++
++msgid "Source"
++msgstr ""
++
++msgid "Srate"
++msgstr ""
++
++msgid "Vpid"
++msgstr ""
++
++msgid "Apid"
++msgstr "PID Audio"
++
++msgid "Tpid"
++msgstr ""
++
++msgid "CA"
++msgstr ""
++
++msgid "Sid"
++msgstr ""
++
++msgid "Nid"
++msgstr "Nid"
++
++msgid "Tid"
++msgstr "Tid"
++
++msgid "Rid"
++msgstr "Rid"
++
++msgid "Save"
++msgstr ""
++
++msgid "Schedule"
++msgstr ""
++
++msgid "Button$Switch"
++msgstr ""
++
++msgid "Button$Delete"
++msgstr ""
++
++msgid "Channel"
++msgstr ""
++
++msgid "Day"
++msgstr ""
++
++msgid "Start"
++msgstr ""
++
++msgid "Stop"
++msgstr ""
++
++msgid "Priority"
++msgstr ""
++
++msgid "Lifetime"
++msgstr ""
++
++msgid "File"
++msgstr ""
++
++msgid "Button$On/Off"
++msgstr ""
++
++msgid "Recording info"
++msgstr ""
++
++msgid "no title"
++msgstr ""
++
++msgid "no description"
++msgstr ""
++
++msgid "Error in recording id."
++msgstr ""
++
++msgid "Recordings"
++msgstr ""
++
++#, c-format
++msgid "Event \"%s\" not found."
++msgstr ""
++
++#, c-format
++msgid "Error in event id \"%s\"."
++msgstr ""
++
++msgid "Button$Record"
++msgstr ""
++
++msgid "What's on now?"
++msgstr ""
++
++msgid "What's on next?"
++msgstr ""
++
++msgid "Button$Next"
++msgstr ""
++
++msgid "Button$Now"
++msgstr ""
++
++msgid "No schedule available."
++msgstr ""
++
++#, c-format
++msgid "Channel %d not defined."
++msgstr ""
++
++msgid "Can't get EPG data."
++msgstr ""
++
++msgid "No channels defined."
++msgstr ""
++
++#, c-format
++msgid "Timer \"%d\" not found."
++msgstr ""
++
++msgid "No timers defined."
++msgstr ""
++
++msgid "No recordings available."
++msgstr ""
++
++msgid "Setup.OSD$Language"
++msgstr ""
++
++msgid "Image"
++msgstr ""
++
++msgid "Remote control by WAP"
++msgstr ""
+diff -urNad vdr-plugin-wapd-0.9~/po/ru_RU.po vdr-plugin-wapd-0.9/po/ru_RU.po
+--- vdr-plugin-wapd-0.9~/po/ru_RU.po	1970-01-01 01:00:00.000000000 +0100
++++ vdr-plugin-wapd-0.9/po/ru_RU.po	2008-02-12 00:55:51.000000000 +0100
+@@ -0,0 +1,185 @@
++# VDR plugin language source file.
++# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
++# This file is distributed under the same license as the VDR package.
++# Vyacheslav Dikonov <sdiconov@mail.ru>, 2004
++#
++msgid ""
++msgstr ""
++"Project-Id-Version: VDR 1.5.7\n"
++"Report-Msgid-Bugs-To: <tg@e-tobi.net>\n"
++"POT-Creation-Date: 2008-02-12 00:54+0100\n"
++"PO-Revision-Date: 2008-02-10 18:52+0100\n"
++"Last-Translator: Vyacheslav Dikonov <sdiconov@mail.ru>\n"
++"Language-Team: <vdr@linuxtv.org>\n"
++"MIME-Version: 1.0\n"
++"Content-Type: text/plain; charset=ISO-8859-5\n"
++"Content-Transfer-Encoding: 8bit\n"
++
++msgid "VDR"
++msgstr ""
++
++msgid "Edit channel"
++msgstr ""
++
++msgid "Channel is being used by a timer!"
++msgstr ""
++
++msgid "Channels"
++msgstr ""
++
++msgid "Edit timer"
++msgstr ""
++
++msgid "Timer is recording!"
++msgstr ""
++
++msgid "Timers"
++msgstr ""
++
++msgid "Name"
++msgstr ""
++
++msgid "Button$New"
++msgstr ""
++
++msgid "Frequency"
++msgstr ""
++
++msgid "Parameters"
++msgstr ""
++
++msgid "Source"
++msgstr ""
++
++msgid "Srate"
++msgstr ""
++
++msgid "Vpid"
++msgstr ""
++
++msgid "Apid"
++msgstr "Apid (ÐãÔØÞ)"
++
++msgid "Tpid"
++msgstr ""
++
++msgid "CA"
++msgstr ""
++
++msgid "Sid"
++msgstr ""
++
++msgid "Nid"
++msgstr "Nid"
++
++msgid "Tid"
++msgstr "Tid"
++
++msgid "Rid"
++msgstr "Rid"
++
++msgid "Save"
++msgstr ""
++
++msgid "Schedule"
++msgstr ""
++
++msgid "Button$Switch"
++msgstr ""
++
++msgid "Button$Delete"
++msgstr ""
++
++msgid "Channel"
++msgstr ""
++
++msgid "Day"
++msgstr ""
++
++msgid "Start"
++msgstr ""
++
++msgid "Stop"
++msgstr ""
++
++msgid "Priority"
++msgstr ""
++
++msgid "Lifetime"
++msgstr ""
++
++msgid "File"
++msgstr ""
++
++msgid "Button$On/Off"
++msgstr ""
++
++msgid "Recording info"
++msgstr ""
++
++msgid "no title"
++msgstr ""
++
++msgid "no description"
++msgstr ""
++
++msgid "Error in recording id."
++msgstr ""
++
++msgid "Recordings"
++msgstr ""
++
++#, c-format
++msgid "Event \"%s\" not found."
++msgstr ""
++
++#, c-format
++msgid "Error in event id \"%s\"."
++msgstr ""
++
++msgid "Button$Record"
++msgstr ""
++
++msgid "What's on now?"
++msgstr ""
++
++msgid "What's on next?"
++msgstr ""
++
++msgid "Button$Next"
++msgstr ""
++
++msgid "Button$Now"
++msgstr ""
++
++msgid "No schedule available."
++msgstr ""
++
++#, c-format
++msgid "Channel %d not defined."
++msgstr ""
++
++msgid "Can't get EPG data."
++msgstr ""
++
++msgid "No channels defined."
++msgstr ""
++
++#, c-format
++msgid "Timer \"%d\" not found."
++msgstr ""
++
++msgid "No timers defined."
++msgstr ""
++
++msgid "No recordings available."
++msgstr ""
++
++msgid "Setup.OSD$Language"
++msgstr ""
++
++msgid "Image"
++msgstr ""
++
++msgid "Remote control by WAP"
++msgstr ""
+diff -urNad vdr-plugin-wapd-0.9~/po/sl_SI.po vdr-plugin-wapd-0.9/po/sl_SI.po
+--- vdr-plugin-wapd-0.9~/po/sl_SI.po	1970-01-01 01:00:00.000000000 +0100
++++ vdr-plugin-wapd-0.9/po/sl_SI.po	2008-02-12 00:55:51.000000000 +0100
+@@ -0,0 +1,186 @@
++# VDR plugin language source file.
++# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
++# This file is distributed under the same license as the VDR package.
++# Miha Setina <mihasetina@softhome.net>, 2000
++# Matjaz Thaler <matjaz.thaler@guest.arnes.si>, 2003
++#
++msgid ""
++msgstr ""
++"Project-Id-Version: VDR 1.5.7\n"
++"Report-Msgid-Bugs-To: <tg@e-tobi.net>\n"
++"POT-Creation-Date: 2008-02-12 00:54+0100\n"
++"PO-Revision-Date: 2008-02-10 18:52+0100\n"
++"Last-Translator: Matjaz Thaler <matjaz.thaler@guest.arnes.si>\n"
++"Language-Team: <vdr@linuxtv.org>\n"
++"MIME-Version: 1.0\n"
++"Content-Type: text/plain; charset=ISO-8859-2\n"
++"Content-Transfer-Encoding: 8bit\n"
++
++msgid "VDR"
++msgstr ""
++
++msgid "Edit channel"
++msgstr ""
++
++msgid "Channel is being used by a timer!"
++msgstr ""
++
++msgid "Channels"
++msgstr ""
++
++msgid "Edit timer"
++msgstr ""
++
++msgid "Timer is recording!"
++msgstr ""
++
++msgid "Timers"
++msgstr ""
++
++msgid "Name"
++msgstr ""
++
++msgid "Button$New"
++msgstr ""
++
++msgid "Frequency"
++msgstr ""
++
++msgid "Parameters"
++msgstr ""
++
++msgid "Source"
++msgstr ""
++
++msgid "Srate"
++msgstr ""
++
++msgid "Vpid"
++msgstr ""
++
++msgid "Apid"
++msgstr "Apid"
++
++msgid "Tpid"
++msgstr ""
++
++msgid "CA"
++msgstr ""
++
++msgid "Sid"
++msgstr ""
++
++msgid "Nid"
++msgstr "Nid"
++
++msgid "Tid"
++msgstr "Tid"
++
++msgid "Rid"
++msgstr "Rid"
++
++msgid "Save"
++msgstr ""
++
++msgid "Schedule"
++msgstr ""
++
++msgid "Button$Switch"
++msgstr ""
++
++msgid "Button$Delete"
++msgstr ""
++
++msgid "Channel"
++msgstr ""
++
++msgid "Day"
++msgstr ""
++
++msgid "Start"
++msgstr ""
++
++msgid "Stop"
++msgstr ""
++
++msgid "Priority"
++msgstr ""
++
++msgid "Lifetime"
++msgstr ""
++
++msgid "File"
++msgstr ""
++
++msgid "Button$On/Off"
++msgstr ""
++
++msgid "Recording info"
++msgstr ""
++
++msgid "no title"
++msgstr ""
++
++msgid "no description"
++msgstr ""
++
++msgid "Error in recording id."
++msgstr ""
++
++msgid "Recordings"
++msgstr ""
++
++#, c-format
++msgid "Event \"%s\" not found."
++msgstr ""
++
++#, c-format
++msgid "Error in event id \"%s\"."
++msgstr ""
++
++msgid "Button$Record"
++msgstr ""
++
++msgid "What's on now?"
++msgstr ""
++
++msgid "What's on next?"
++msgstr ""
++
++msgid "Button$Next"
++msgstr ""
++
++msgid "Button$Now"
++msgstr ""
++
++msgid "No schedule available."
++msgstr ""
++
++#, c-format
++msgid "Channel %d not defined."
++msgstr ""
++
++msgid "Can't get EPG data."
++msgstr ""
++
++msgid "No channels defined."
++msgstr ""
++
++#, c-format
++msgid "Timer \"%d\" not found."
++msgstr ""
++
++msgid "No timers defined."
++msgstr ""
++
++msgid "No recordings available."
++msgstr ""
++
++msgid "Setup.OSD$Language"
++msgstr ""
++
++msgid "Image"
++msgstr ""
++
++msgid "Remote control by WAP"
++msgstr ""
+diff -urNad vdr-plugin-wapd-0.9~/po/sv_SE.po vdr-plugin-wapd-0.9/po/sv_SE.po
+--- vdr-plugin-wapd-0.9~/po/sv_SE.po	1970-01-01 01:00:00.000000000 +0100
++++ vdr-plugin-wapd-0.9/po/sv_SE.po	2008-02-12 00:55:51.000000000 +0100
+@@ -0,0 +1,186 @@
++# VDR plugin language source file.
++# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
++# This file is distributed under the same license as the VDR package.
++# Tomas Prybil <tomas@prybil.se>, 2002
++# Jan Ekholm <chakie@infa.abo.fi>, 2003
++#
++msgid ""
++msgstr ""
++"Project-Id-Version: VDR 1.5.7\n"
++"Report-Msgid-Bugs-To: <tg@e-tobi.net>\n"
++"POT-Creation-Date: 2008-02-12 00:54+0100\n"
++"PO-Revision-Date: 2008-02-10 18:52+0100\n"
++"Last-Translator: Tomas Prybil <tomas@prybil.se>\n"
++"Language-Team: <vdr@linuxtv.org>\n"
++"MIME-Version: 1.0\n"
++"Content-Type: text/plain; charset=ISO-8859-1\n"
++"Content-Transfer-Encoding: 8bit\n"
++
++msgid "VDR"
++msgstr ""
++
++msgid "Edit channel"
++msgstr ""
++
++msgid "Channel is being used by a timer!"
++msgstr ""
++
++msgid "Channels"
++msgstr ""
++
++msgid "Edit timer"
++msgstr ""
++
++msgid "Timer is recording!"
++msgstr ""
++
++msgid "Timers"
++msgstr ""
++
++msgid "Name"
++msgstr ""
++
++msgid "Button$New"
++msgstr ""
++
++msgid "Frequency"
++msgstr ""
++
++msgid "Parameters"
++msgstr ""
++
++msgid "Source"
++msgstr ""
++
++msgid "Srate"
++msgstr ""
++
++msgid "Vpid"
++msgstr ""
++
++msgid "Apid"
++msgstr "Audio PID"
++
++msgid "Tpid"
++msgstr ""
++
++msgid "CA"
++msgstr ""
++
++msgid "Sid"
++msgstr ""
++
++msgid "Nid"
++msgstr "Nid"
++
++msgid "Tid"
++msgstr "Tid"
++
++msgid "Rid"
++msgstr "Rid"
++
++msgid "Save"
++msgstr ""
++
++msgid "Schedule"
++msgstr ""
++
++msgid "Button$Switch"
++msgstr ""
++
++msgid "Button$Delete"
++msgstr ""
++
++msgid "Channel"
++msgstr ""
++
++msgid "Day"
++msgstr ""
++
++msgid "Start"
++msgstr ""
++
++msgid "Stop"
++msgstr ""
++
++msgid "Priority"
++msgstr ""
++
++msgid "Lifetime"
++msgstr ""
++
++msgid "File"
++msgstr ""
++
++msgid "Button$On/Off"
++msgstr ""
++
++msgid "Recording info"
++msgstr ""
++
++msgid "no title"
++msgstr ""
++
++msgid "no description"
++msgstr ""
++
++msgid "Error in recording id."
++msgstr ""
++
++msgid "Recordings"
++msgstr ""
++
++#, c-format
++msgid "Event \"%s\" not found."
++msgstr ""
++
++#, c-format
++msgid "Error in event id \"%s\"."
++msgstr ""
++
++msgid "Button$Record"
++msgstr ""
++
++msgid "What's on now?"
++msgstr ""
++
++msgid "What's on next?"
++msgstr ""
++
++msgid "Button$Next"
++msgstr ""
++
++msgid "Button$Now"
++msgstr ""
++
++msgid "No schedule available."
++msgstr ""
++
++#, c-format
++msgid "Channel %d not defined."
++msgstr ""
++
++msgid "Can't get EPG data."
++msgstr ""
++
++msgid "No channels defined."
++msgstr ""
++
++#, c-format
++msgid "Timer \"%d\" not found."
++msgstr ""
++
++msgid "No timers defined."
++msgstr ""
++
++msgid "No recordings available."
++msgstr ""
++
++msgid "Setup.OSD$Language"
++msgstr ""
++
++msgid "Image"
++msgstr ""
++
++msgid "Remote control by WAP"
++msgstr ""
+diff -urNad vdr-plugin-wapd-0.9~/po/tr_TR.po vdr-plugin-wapd-0.9/po/tr_TR.po
+--- vdr-plugin-wapd-0.9~/po/tr_TR.po	1970-01-01 01:00:00.000000000 +0100
++++ vdr-plugin-wapd-0.9/po/tr_TR.po	2008-02-12 00:55:51.000000000 +0100
+@@ -0,0 +1,185 @@
++# VDR plugin language source file.
++# Copyright (C) 2007 Klaus Schmidinger <kls@cadsoft.de>
++# This file is distributed under the same license as the VDR package.
++# Oktay Yolgeçen <oktay_73@yahoo.de>, 2007
++#
++msgid ""
++msgstr ""
++"Project-Id-Version: VDR 1.5.7\n"
++"Report-Msgid-Bugs-To: <tg@e-tobi.net>\n"
++"POT-Creation-Date: 2008-02-12 00:54+0100\n"
++"PO-Revision-Date: 2008-02-10 18:52+0100\n"
++"Last-Translator: Oktay Yolgeçen <oktay_73@yahoo.de>\n"
++"Language-Team: <vdr@linuxtv.org>\n"
++"MIME-Version: 1.0\n"
++"Content-Type: text/plain; charset=ISO-8859-9\n"
++"Content-Transfer-Encoding: 8bit\n"
++
++msgid "VDR"
++msgstr ""
++
++msgid "Edit channel"
++msgstr ""
++
++msgid "Channel is being used by a timer!"
++msgstr ""
++
++msgid "Channels"
++msgstr ""
++
++msgid "Edit timer"
++msgstr ""
++
++msgid "Timer is recording!"
++msgstr ""
++
++msgid "Timers"
++msgstr ""
++
++msgid "Name"
++msgstr ""
++
++msgid "Button$New"
++msgstr ""
++
++msgid "Frequency"
++msgstr ""
++
++msgid "Parameters"
++msgstr ""
++
++msgid "Source"
++msgstr ""
++
++msgid "Srate"
++msgstr ""
++
++msgid "Vpid"
++msgstr ""
++
++msgid "Apid"
++msgstr ""
++
++msgid "Tpid"
++msgstr ""
++
++msgid "CA"
++msgstr ""
++
++msgid "Sid"
++msgstr ""
++
++msgid "Nid"
++msgstr ""
++
++msgid "Tid"
++msgstr ""
++
++msgid "Rid"
++msgstr ""
++
++msgid "Save"
++msgstr ""
++
++msgid "Schedule"
++msgstr ""
++
++msgid "Button$Switch"
++msgstr ""
++
++msgid "Button$Delete"
++msgstr ""
++
++msgid "Channel"
++msgstr ""
++
++msgid "Day"
++msgstr ""
++
++msgid "Start"
++msgstr ""
++
++msgid "Stop"
++msgstr ""
++
++msgid "Priority"
++msgstr ""
++
++msgid "Lifetime"
++msgstr ""
++
++msgid "File"
++msgstr ""
++
++msgid "Button$On/Off"
++msgstr ""
++
++msgid "Recording info"
++msgstr ""
++
++msgid "no title"
++msgstr ""
++
++msgid "no description"
++msgstr ""
++
++msgid "Error in recording id."
++msgstr ""
++
++msgid "Recordings"
++msgstr ""
++
++#, c-format
++msgid "Event \"%s\" not found."
++msgstr ""
++
++#, c-format
++msgid "Error in event id \"%s\"."
++msgstr ""
++
++msgid "Button$Record"
++msgstr ""
++
++msgid "What's on now?"
++msgstr ""
++
++msgid "What's on next?"
++msgstr ""
++
++msgid "Button$Next"
++msgstr ""
++
++msgid "Button$Now"
++msgstr ""
++
++msgid "No schedule available."
++msgstr ""
++
++#, c-format
++msgid "Channel %d not defined."
++msgstr ""
++
++msgid "Can't get EPG data."
++msgstr ""
++
++msgid "No channels defined."
++msgstr ""
++
++#, c-format
++msgid "Timer \"%d\" not found."
++msgstr ""
++
++msgid "No timers defined."
++msgstr ""
++
++msgid "No recordings available."
++msgstr ""
++
++msgid "Setup.OSD$Language"
++msgstr ""
++
++msgid "Image"
++msgstr ""
++
++msgid "Remote control by WAP"
++msgstr ""
+diff -urNad vdr-plugin-wapd-0.9~/server.c vdr-plugin-wapd-0.9/server.c
+--- vdr-plugin-wapd-0.9~/server.c	2008-01-19 15:41:46.000000000 +0100
++++ vdr-plugin-wapd-0.9/server.c	2008-02-12 00:53:26.000000000 +0100
+@@ -35,7 +35,6 @@
+ #include <vdr/config.h>
+ #include "server.h"
+ #include "tools.h"
+-#include "i18n.h"
+ 
+ #define MAXLINES                   9
+ 
+diff -urNad vdr-plugin-wapd-0.9~/wapd.c vdr-plugin-wapd-0.9/wapd.c
+--- vdr-plugin-wapd-0.9~/wapd.c	2008-01-13 13:30:24.000000000 +0100
++++ vdr-plugin-wapd-0.9/wapd.c	2008-02-12 00:53:26.000000000 +0100
+@@ -25,11 +25,11 @@
+ #include <vdr/plugin.h>
+ #include <vdr/tools.h>
+ #include "server.h"
+-#include "i18n.h"
++#include <vdr/i18n.h>
+ #include "access.h"
+ 
+ static const char *VERSION        = "0.9";
+-static const char *DESCRIPTION    = "Remote control by WAP";
++static const char *DESCRIPTION    = trNOOP("Remote control by WAP");
+ 
+ 
+ class cPluginWapd : public cPlugin {
+@@ -84,7 +84,6 @@
+ 
+ bool cPluginWapd::Start(void)
+ {
+-  RegisterI18n(Phrases);
+   if (WapHosts.Load(AddDirectory(ConfigDirectory(), "waphosts"), true)
+      && WapAccess.Load(AddDirectory(ConfigDirectory(), "wapaccess"), true)
+      && (server = new cWapServer(tcpport)))

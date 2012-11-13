@@ -1,0 +1,54 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 03_gcc-4.1.x.dpatch by Tobias Grimm <tg@e-tobi.net>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: fixes some gcc compiler warnings.
+
+@DPATCH@
+diff -urNad vdr-plugin-wapd-0.9~/server.c vdr-plugin-wapd-0.9/server.c
+--- vdr-plugin-wapd-0.9~/server.c	2008-01-19 15:41:46.000000000 +0100
++++ vdr-plugin-wapd-0.9/server.c	2008-02-10 19:24:09.000000000 +0100
+@@ -135,7 +135,7 @@
+   memset(wmlbuffer, 0, WMLBUFFER);
+ }
+ 
+-void cWapServer::Header(int status, char* title, char* mime_type, char* realm, size_t size, int refresh)
++void cWapServer::Header(int status, const char* title, const char* mime_type, const char* realm, size_t size, int refresh)
+ {
+   time_t now;
+   char timebuf[100];
+@@ -160,7 +160,7 @@
+   Reply("Connection: close\n\n");
+ }
+ 
+-void cWapServer::Error(int status, char* title, char* text)
++void cWapServer::Error(int status, const char* title, const char* text)
+ {
+   ReplyBuffer(WML_PROLOGUE());
+   ReplyBuffer(WML_START("%s") "%s", title, text);
+diff -urNad vdr-plugin-wapd-0.9~/server.h vdr-plugin-wapd-0.9/server.h
+--- vdr-plugin-wapd-0.9~/server.h	2008-01-15 10:14:14.000000000 +0100
++++ vdr-plugin-wapd-0.9/server.h	2008-02-10 19:24:09.000000000 +0100
+@@ -58,8 +58,8 @@
+   void Reply(const char *fmt, ...);
+   void ReplyBuffer(const char *fmt, ...);
+   void FlushBuffer(int length = -1);
+-  void Header(int status, char* title, char* mime_type, char* realm = NULL, size_t size = 0, int refresh = 0);
+-  void Error(int status, char* title, char* text);
++  void Header(int status, const char* const title, const char* mime_type, const char* realm = NULL, size_t size = 0, int refresh = 0);
++  void Error(int status, const char* title, const char* text);
+   bool ProcessHeader(void);
+   bool Option(const char *Name);
+   virtual void Action(void);
+diff -urNad vdr-plugin-wapd-0.9~/wappasswd.c vdr-plugin-wapd-0.9/wappasswd.c
+--- vdr-plugin-wapd-0.9~/wappasswd.c	2008-01-06 14:08:53.000000000 +0100
++++ vdr-plugin-wapd-0.9/wappasswd.c	2008-02-10 19:24:28.000000000 +0100
+@@ -30,7 +30,7 @@
+ {
+   if (argc != 3) exit(EXIT_FAILURE);
+ 
+-  char *sset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789./";
++  const char *sset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789./";
+   char salt[3] = "AA";
+ 
+   srand((int) time((time_t *) NULL));

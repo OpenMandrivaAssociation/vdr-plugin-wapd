@@ -1,0 +1,13 @@
+Index: wapd-0.9/Makefile
+===================================================================
+--- wapd-0.9/Makefile
++++ wapd-0.9/Makefile	2009-07-27 22:06:41.969869976 +0300
+@@ -80,7 +80,7 @@
+ 	@cp $@ $(LIBDIR)/$@.$(APIVERSION)
+ 
+ wappasswd: wappasswd.c
+-	$(CXX) $(CXXFLAGS) $(LIBS) -o wappasswd wappasswd.c
++	$(CXX) $(CXXFLAGS) -o wappasswd wappasswd.c $(LIBS)
+ 
+ dist: clean
+ 	@-rm -rf $(TMPDIR)/$(ARCHIVE)
