@@ -2,7 +2,7 @@
 %define plugin	wapd
 %define name	vdr-plugin-%plugin
 %define version	0.9
-%define rel	5
+%define rel	6
 
 Summary:	VDR plugin: Remote control by WAP
 Name:		%name
@@ -15,7 +15,6 @@ Source:		http://www.heiligenmann.de/vdr/download/vdr-%plugin-%version.tgz
 Patch0:		02_gettext-i18n.dpatch
 Patch1:		03_gcc-4.1.x.dpatch
 Patch2:		wapd-linking-order.patch
-BuildRoot:	%{_tmppath}/%{name}-buildroot
 BuildRequires:	vdr-devel >= 1.6.0
 Requires:	vdr-abi = %vdr_abi
 
@@ -41,18 +40,8 @@ param="-p PORT"
 %vdr_plugin_build
 
 %install
-rm -rf %{buildroot}
 %vdr_plugin_install
 install -D -m755 wappasswd %{buildroot}%{_bindir}/wappasswd
-
-%clean
-rm -rf %{buildroot}
-
-%post
-%vdr_plugin_post %plugin
-
-%postun
-%vdr_plugin_postun %plugin
 
 %files -f %plugin.vdr
 %defattr(-,root,root)
