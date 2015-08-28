@@ -3,7 +3,7 @@
 Summary:	VDR plugin: Remote control by WAP
 Name:		vdr-plugin-%plugin
 Version:	0.9
-Release:	7
+Release:	8
 Group:		Video
 License:	GPL
 URL:		http://www.heiligenmann.de/vdr/vdr/plugins/wapd.html
