@@ -6,7 +6,7 @@ Version:	0.9
 Release:	8
 Group:		Video
 License:	GPL
-URL:		http://www.heiligenmann.de/vdr/vdr/plugins/wapd.html
+URL:		https://www.heiligenmann.de/vdr/vdr/plugins/wapd.html
 Source:		http://www.heiligenmann.de/vdr/download/vdr-%plugin-%{version}.tgz
 Patch0:		02_gettext-i18n.dpatch
 Patch1:		03_gcc-4.1.x.dpatch
